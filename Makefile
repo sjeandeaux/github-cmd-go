@@ -55,7 +55,7 @@ test-it-test: fmt vet ## go test with integration
 
 .PHONY: test-cover
 test-cover: fmt vet ## go test with coverage
-	go test  $(PKGGOFILES) -cover -race -v $(LDFLAGS)
+	go test  $(PKGGOFILES) -cover -race -v $(LDFLAGS) -covermode=count -coverprofile=coverage.out
 
 .PHONY: test-coverage
 test-coverage: clean fmt vet ## for jenkins
