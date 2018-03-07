@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+//Position Major, Minor and Patch
+type Position int
+
+const (
+	//PositionMajor position major
+	PositionMajor Position = iota
+	//PositionMinor position minor
+	PositionMinor
+	//PositionPatch position major
+	PositionPatch
+)
+
 //Version the version X.Y.Z. (TODO prebuild)
 type Version struct {
 	// Major information
@@ -15,6 +27,39 @@ type Version struct {
 	Minor int64
 	// Patch information
 	Patch int64
+}
+
+//Increment increment the version
+func (v *Version) Increment(po Position) *Version {
+
+	switch po {
+	case PositionMajor:
+		return &Version{
+			Major: v.Major + 1,
+			Minor: 0,
+			Patch: 0,
+		}
+	case PositionMinor:
+		return &Version{
+			Major: v.Major,
+			Minor: v.Minor + 1,
+			Patch: 0,
+		}
+	case PositionPatch:
+		return &Version{
+			Major: v.Major,
+			Minor: v.Minor,
+			Patch: v.Patch + 1,
+		}
+	default:
+		return nil
+	}
+}
+
+//String print X.Y.Z
+func (v *Version) String() string {
+	const format = "%d.%d.%d"
+	return fmt.Sprintf(format, v.Major, v.Minor, v.Patch)
 }
 
 //NewVersion parse the value in Version

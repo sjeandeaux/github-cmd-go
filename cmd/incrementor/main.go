@@ -16,18 +16,18 @@ type commandLine struct {
 
 func (c *commandLine) increment() (string, error) {
 	const format = "%d.%d.%d"
-	version, err := semver.NewVersion(c.version)
+	v, err := semver.NewVersion(c.version)
 	if err != nil {
 		return "", err
 	}
 
 	switch c.kind {
 	case "major":
-		return fmt.Sprintf(format, version.Major+1, 0, 0), nil
+		return v.Increment(semver.PositionMajor).String(), nil
 	case "minor":
-		return fmt.Sprintf(format, version.Major, version.Minor+1, 0), nil
+		return v.Increment(semver.PositionMinor).String(), nil
 	case "patch":
-		return fmt.Sprintf(format, version.Major, version.Minor, version.Patch+1), nil
+		return v.Increment(semver.PositionPatch).String(), nil
 	default:
 		return "", fmt.Errorf("%q is unknown", c.kind)
 	}
