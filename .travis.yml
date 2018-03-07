@@ -1,0 +1,12 @@
+language: go
+go:
+  - 1.9
+  - tip
+
+before_install:
+  - make tools
+  - if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
+
+script:
+   - make test
+  

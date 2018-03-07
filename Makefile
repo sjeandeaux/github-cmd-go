@@ -2,7 +2,7 @@ OWNER=sjeandeaux
 REPO=github-cmd-go
 SRC_DIR=github.com/$(OWNER)/$(REPO)
 BUILD_VERSION=$(shell cat VERSION.txt)
-NEXT_VERSION?=$(shell incrementor -kind minor -version $(BUILD_VERSION))
+NEXT_VERSION?=$(shell incrementor -position minor -version $(BUILD_VERSION))
 #Default application or lambda
 APPL?=associator
 
@@ -55,7 +55,7 @@ test-it-test: fmt vet ## go test with integration
 
 .PHONY: test-cover
 test-cover: fmt vet ## go test with coverage
-	go test  $(PKGGOFILES) -cover -race -v $(LDFLAGS)
+	go test  $(PKGGOFILES) -cover -v $(LDFLAGS) -covermode=count -coverprofile=coverage.out
 
 .PHONY: test-coverage
 test-coverage: clean fmt vet ## for jenkins
@@ -110,6 +110,10 @@ tools: ## install tools to develop
 	go get -u github.com/golang/lint/golint
 	go get github.com/axw/gocov/...
 	go get github.com/AlekSi/gocov-xml
+	go get github.com/axw/gocov/gocov
+	go get github.com/mattn/goveralls
+	go get golang.org/x/oauth2
+	go get github.com/stretchr/testify/assert
 
 release-start: ## start release
 	git flow release start $(BUILD_VERSION)
