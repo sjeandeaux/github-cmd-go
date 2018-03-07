@@ -26,7 +26,7 @@ func (c *commandLine) increment() (*semver.Version, error) {
 var commandLineValue = new(commandLine)
 
 func init() {
-	flag.StringVar(&commandLineValue.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The kind major minor patch")
+	flag.StringVar(&commandLineValue.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The position major minor patch")
 	flag.StringVar(&commandLineValue.version, "version", internalos.Getenv("INCREMENTOR_VERSION", "0.1.0"), "The version x.y.z")
 	flag.Parse()
 }
