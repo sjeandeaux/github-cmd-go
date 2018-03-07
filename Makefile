@@ -2,7 +2,7 @@ OWNER=sjeandeaux
 REPO=github-cmd-go
 SRC_DIR=github.com/$(OWNER)/$(REPO)
 BUILD_VERSION=$(shell cat VERSION.txt)
-NEXT_VERSION?=$(shell incrementor -kind minor -version $(BUILD_VERSION))
+NEXT_VERSION?=$(shell incrementor -position minor -version $(BUILD_VERSION))
 #Default application or lambda
 APPL?=associator
 

@@ -15,25 +15,12 @@ type NamePosition map[string]Position
 
 const (
 	//PositionMajor position major
-	PositionMajor Position = iota
+	PositionMajor = "major"
 	//PositionMinor position minor
-	PositionMinor
-	//PositionPatch position major
-	PositionPatch
+	PositionMinor = "minor"
+	//PositionPatch position patch
+	PositionPatch = "patch"
 )
-
-//GetPosition get the position in version
-func (n NamePosition) GetPosition(name string) (Position, bool) {
-	po, ok := n[name]
-	return po, ok
-}
-
-//NamePositionValues the position in version
-var NamePositionValues = NamePosition{
-	"major": PositionMajor,
-	"minor": PositionMinor,
-	"patch": PositionPatch,
-}
 
 //Version the version X.Y.Z. (TODO prebuild)
 type Version struct {
@@ -45,39 +32,29 @@ type Version struct {
 	Patch int64
 }
 
-//IncrementString incremente the position
-func (v *Version) IncrementString(poString string) (*Version, error) {
-	po, ok := NamePositionValues.GetPosition(poString)
-	if !ok {
-		return nil, fmt.Errorf("%q ", poString)
-	}
-	return v.Increment(po), nil
-}
-
 //Increment increment the version
-func (v *Version) Increment(po Position) *Version {
-
+func (v *Version) Increment(po string) (*Version, error) {
 	switch po {
 	case PositionMajor:
 		return &Version{
 			Major: v.Major + 1,
 			Minor: 0,
 			Patch: 0,
-		}
+		}, nil
 	case PositionMinor:
 		return &Version{
 			Major: v.Major,
 			Minor: v.Minor + 1,
 			Patch: 0,
-		}
+		}, nil
 	case PositionPatch:
 		return &Version{
 			Major: v.Major,
 			Minor: v.Minor,
 			Patch: v.Patch + 1,
-		}
+		}, nil
 	default:
-		return nil
+		return nil, fmt.Errorf("%q is unknowndd", po)
 	}
 }
 

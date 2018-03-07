@@ -4,14 +4,15 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/sjeandeaux/github-cmd-go/semver"
+
+	internalos "github.com/sjeandeaux/github-cmd-go/internal/os"
 )
 
 type commandLine struct {
-	kind    string
-	version string
+	position string
+	version  string
 }
 
 func (c *commandLine) increment() (*semver.Version, error) {
@@ -19,14 +20,14 @@ func (c *commandLine) increment() (*semver.Version, error) {
 	if err != nil {
 		return nil, err
 	}
-	return v.IncrementString(c.kind)
+	return v.Increment(c.position)
 }
 
 var commandLineValue = new(commandLine)
 
 func init() {
-	flag.StringVar(&commandLineValue.kind, "kind", os.Getenv("INCREMENTOR_KIND"), "The kind major minor patch")
-	flag.StringVar(&commandLineValue.version, "version", os.Getenv("INCREMENTOR_VERSION"), "The version x.y.z")
+	flag.StringVar(&commandLineValue.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The kind major minor patch")
+	flag.StringVar(&commandLineValue.version, "version", internalos.Getenv("INCREMENTOR_VERSION", "0.1.0"), "The version x.y.z")
 	flag.Parse()
 }
 
