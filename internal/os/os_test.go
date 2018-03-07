@@ -1,9 +1,10 @@
-package os
+package os_test
 
 import (
 	"os"
 	"testing"
 
+	internalos "github.com/sjeandeaux/github-cmd-go/internal/os"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +33,7 @@ func TestGetenv(t *testing.T) {
 	}
 
 	for _, data := range inputs {
-		actual := Getenv(data.key, data.defaultValue)
+		actual := internalos.Getenv(data.key, data.defaultValue)
 		assert.Equal(t, data.expected, actual)
 	}
 

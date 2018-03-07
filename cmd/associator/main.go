@@ -41,6 +41,8 @@ type github struct {
 	create bool
 }
 
+type assertValue asset
+
 //asset information on asset to upload https://developer.github.com/v3/repos/releases/#upload-a-release-asset
 type asset struct {
 	file        string

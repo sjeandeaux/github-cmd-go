@@ -1,26 +1,27 @@
-package semver
+package semver_test
 
 import "testing"
 import "github.com/stretchr/testify/assert"
+import "github.com/sjeandeaux/github-cmd-go/semver"
 
 func TestNewVersionOk(t *testing.T) {
 	var inputs = []struct {
 		input    string
-		expected *Version
+		expected *semver.Version
 	}{
 		{
 			input:    "333.666.999",
-			expected: &Version{Major: 333, Minor: 666, Patch: 999},
+			expected: &semver.Version{Major: 333, Minor: 666, Patch: 999},
 		},
 
 		{
 			input:    "333.666.999-beta",
-			expected: &Version{Major: 333, Minor: 666, Patch: 999},
+			expected: &semver.Version{Major: 333, Minor: 666, Patch: 999},
 		},
 	}
 
 	for _, data := range inputs {
-		actual, iWantNil := NewVersion(data.input)
+		actual, iWantNil := semver.NewVersion(data.input)
 		assert.Equal(t, data.expected, actual)
 		assert.Nil(t, iWantNil)
 	}
@@ -58,33 +59,33 @@ func TestNewVersionKo(t *testing.T) {
 	}
 
 	for _, data := range inputs {
-		_, actualErr := NewVersion(data.input)
+		_, actualErr := semver.NewVersion(data.input)
 		assert.EqualError(t, actualErr, data.expectedError)
 	}
 }
 
 func TestIncrementOk(t *testing.T) {
 	var inputs = []struct {
-		value    *Version
-		expected *Version
+		value    *semver.Version
+		expected *semver.Version
 		position string
 	}{
 		{
-			position: PositionMajor,
-			value:    &Version{Major: 332, Minor: 666, Patch: 999},
-			expected: &Version{Major: 333, Minor: 0, Patch: 0},
+			position: semver.PositionMajor,
+			value:    &semver.Version{Major: 332, Minor: 666, Patch: 999},
+			expected: &semver.Version{Major: 333, Minor: 0, Patch: 0},
 		},
 
 		{
-			position: PositionMinor,
-			value:    &Version{Major: 333, Minor: 665, Patch: 999},
-			expected: &Version{Major: 333, Minor: 666, Patch: 0},
+			position: semver.PositionMinor,
+			value:    &semver.Version{Major: 333, Minor: 665, Patch: 999},
+			expected: &semver.Version{Major: 333, Minor: 666, Patch: 0},
 		},
 
 		{
-			position: PositionPatch,
-			value:    &Version{Major: 333, Minor: 666, Patch: 998},
-			expected: &Version{Major: 333, Minor: 666, Patch: 999},
+			position: semver.PositionPatch,
+			value:    &semver.Version{Major: 333, Minor: 666, Patch: 998},
+			expected: &semver.Version{Major: 333, Minor: 666, Patch: 999},
 		},
 	}
 
@@ -97,13 +98,13 @@ func TestIncrementOk(t *testing.T) {
 
 func TestIncrementKo(t *testing.T) {
 	var inputs = []struct {
-		value         *Version
+		value         *semver.Version
 		expectedError string
 		position      string
 	}{
 		{
 			position:      "unknown",
-			value:         &Version{Major: 332, Minor: 666, Patch: 999},
+			value:         &semver.Version{Major: 332, Minor: 666, Patch: 999},
 			expectedError: "\"unknown\" is unknowndd",
 		},
 	}
@@ -116,12 +117,12 @@ func TestIncrementKo(t *testing.T) {
 
 func TestString(t *testing.T) {
 	var inputs = []struct {
-		value    *Version
+		value    *semver.Version
 		expected string
 	}{
 		{
 
-			value:    &Version{Major: 333, Minor: 666, Patch: 999},
+			value:    &semver.Version{Major: 333, Minor: 666, Patch: 999},
 			expected: "333.666.999",
 		},
 	}
