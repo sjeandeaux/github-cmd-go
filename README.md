@@ -1,9 +1,37 @@
 # Github Command Lines in Golang
 
+[![Build Status](https://travis-ci.org/sjeandeaux/github-cmd-go.svg)](https://travis-ci.org/sjeandeaux/github-cmd-go) [![Coverage Status](https://coveralls.io/repos/sjeandeaux/github-cmd-go/badge.svg)](https://coveralls.io/r/sjeandeaux/github-cmd-go)
+
 ## incrementor
 
-The tool increments the verison `incrementor -kind minor -version 0.1.0`.
+The tool increments the verison.
+
+```
+>incrementor -position minor -version 0.1.0
+0.2.0
+```
 
 ## associator
 
-The tools associates the binary to a release.
+The tools associates the binary to a release in github.
+
+```
+>go build $(LDFLAGS) -o ./target/$(1)-$(2)-${APPL} ./cmd/${APPL}
+#this command creates a release and attachs the file
+>associator -create -name <name> \
+                   -label <label> \
+                   -content-type  <content-type>\
+                   -owner <owner> \
+                   -repo <repo> \
+                   -tag  <tag>  \
+                   -file <file>
+
+#this command attachs the file
+>associator -name <name> \
+                   -label <label> \
+                   -content-type  <content-type>\
+                   -owner <owner> \
+                   -repo <repo> \
+                   -tag  <tag>  \
+                   -file <file>
+```
