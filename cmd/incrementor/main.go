@@ -14,24 +14,12 @@ type commandLine struct {
 	version string
 }
 
-func (c *commandLine) increment() (string, error) {
-	const format = "%d.%d.%d"
+func (c *commandLine) increment() (*semver.Version, error) {
 	v, err := semver.NewVersion(c.version)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-
-	switch c.kind {
-	case "major":
-		return v.Increment(semver.PositionMajor).String(), nil
-	case "minor":
-		return v.Increment(semver.PositionMinor).String(), nil
-	case "patch":
-		return v.Increment(semver.PositionPatch).String(), nil
-	default:
-		return "", fmt.Errorf("%q is unknown", c.kind)
-	}
-
+	return v.IncrementString(c.kind)
 }
 
 var commandLineValue = new(commandLine)
@@ -48,5 +36,4 @@ func main() {
 	} else {
 		fmt.Print(value)
 	}
-
 }

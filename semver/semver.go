@@ -10,6 +10,9 @@ import (
 //Position Major, Minor and Patch
 type Position int
 
+//NamePosition the name and his position
+type NamePosition map[string]Position
+
 const (
 	//PositionMajor position major
 	PositionMajor Position = iota
@@ -19,6 +22,19 @@ const (
 	PositionPatch
 )
 
+//GetPosition get the position in version
+func (n NamePosition) GetPosition(name string) (Position, bool) {
+	po, ok := n[name]
+	return po, ok
+}
+
+//NamePositionValues the position in version
+var NamePositionValues = NamePosition{
+	"major": PositionMajor,
+	"minor": PositionMinor,
+	"patch": PositionPatch,
+}
+
 //Version the version X.Y.Z. (TODO prebuild)
 type Version struct {
 	// Major information
@@ -27,6 +43,15 @@ type Version struct {
 	Minor int64
 	// Patch information
 	Patch int64
+}
+
+//IncrementString incremente the position
+func (v *Version) IncrementString(poString string) (*Version, error) {
+	po, ok := NamePositionValues.GetPosition(poString)
+	if !ok {
+		return nil, fmt.Errorf("%q ", poString)
+	}
+	return v.Increment(po), nil
 }
 
 //Increment increment the version
