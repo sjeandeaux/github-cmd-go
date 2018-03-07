@@ -9,5 +9,5 @@ before_install:
 
 script:
    - make test
-   - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
+   - $HOME/gopath/bin/goveralls -service=travis-pro -repotoken $COVERALLS_TOKEN
   
