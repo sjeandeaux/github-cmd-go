@@ -48,7 +48,13 @@ func main() {
 	var only *github.Release
 	var err error
 	if commandLineArgsValue.create {
-		only, err = client.CreateRelease(commandLineArgsValue.tag)
+
+		e := &github.EditRelease{
+			TagName: commandLineArgsValue.tag,
+			Name:    commandLineArgsValue.tag,
+		}
+
+		only, err = client.CreateRelease(e)
 
 		if err != nil {
 			log.Fatal(err)

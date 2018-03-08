@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -121,30 +122,21 @@ func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
 		b, _ := ioutil.ReadAll(resp.Body)
 		return nil, fmt.Errorf("failed %d %s", resp.StatusCode, b)
 	}
-	onlyURL := &Release{}
-	err = json.NewDecoder(resp.Body).Decode(onlyURL)
-	if err != nil {
-		return nil, err
-	}
 
-	return onlyURL, nil
+	onlyURL := &Release{}
+	return onlyURL, decode(resp.Body, onlyURL)
 }
 
 //CreateRelease create a release
-func (c *Client) CreateRelease(tag string) (*Release, error) {
+func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
 	const githubAPI = "https://api.github.com/repos/"
 	const (
 		contentType     = "Content-Type"
 		applicationJSON = "application/json"
 	)
 
-	e := &EditRelease{
-		TagName: tag,
-		Name:    tag,
-	}
-
 	url := fmt.Sprint(githubAPI, c.owner, "/", c.repo, "/releases")
-	jsonValue, _ := json.Marshal(e)
+	jsonValue, _ := json.Marshal(edit)
 	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonValue))
 	request.Header.Add(contentType, applicationJSON)
 	resp, err := c.httpClient.Do(request)
@@ -161,10 +153,9 @@ func (c *Client) CreateRelease(tag string) (*Release, error) {
 		return nil, fmt.Errorf("failed %d %s", resp.StatusCode, b)
 	}
 	onlyURL := &Release{}
-	err = json.NewDecoder(resp.Body).Decode(onlyURL)
-	if err != nil {
-		return nil, err
-	}
+	return onlyURL, decode(resp.Body, onlyURL)
+}
 
-	return onlyURL, nil
+func decode(r io.Reader, i interface{}) error {
+	return json.NewDecoder(r).Decode(i)
 }
