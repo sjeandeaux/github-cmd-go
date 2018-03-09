@@ -3,9 +3,12 @@ package semver
 
 import (
 	"fmt"
+	"os/exec"
 	"strconv"
 	"strings"
 )
+
+var execCommand = exec.Command
 
 //Position Major, Minor and Patch
 type Position int
@@ -21,6 +24,27 @@ const (
 	//PositionPatch position patch
 	PositionPatch = "patch"
 )
+
+// NewGitVersion get the version from git
+func NewGitVersion() (*Version, error) {
+	cmdGetLatestTag, errTag := execCommand("git", "rev-list", "--tags", "--max-count=1").Output()
+	//not tag
+	if errTag != nil {
+		return &Version{
+			Major: 0,
+			Minor: 0,
+			Patch: 0,
+		}, nil
+	}
+	valueCommit := strings.TrimSpace(string(cmdGetLatestTag))
+
+	cmdTag, err := execCommand("git", "describe", "--tags", valueCommit).Output()
+	if err != nil {
+		return nil, err
+	}
+	valueTag := strings.TrimSpace(string(cmdTag))
+	return parse(string(valueTag))
+}
 
 //Version the version X.Y.Z. (TODO prebuild)
 type Version struct {

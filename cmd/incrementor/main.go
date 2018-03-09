@@ -18,7 +18,14 @@ type commandLineArgs struct {
 
 //increment the version
 func (c *commandLineArgs) increment() (*semver.Version, error) {
-	v, err := semver.NewVersion(c.version)
+	var v *semver.Version
+	var err error
+	if c.version == "" {
+		v, err = semver.NewGitVersion()
+	} else {
+		v, err = semver.NewVersion(c.version)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +40,7 @@ func init() {
 
 	//command line
 	flag.StringVar(&commandLineValue.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The position major minor patch")
-	flag.StringVar(&commandLineValue.version, "version", internalos.Getenv("INCREMENTOR_VERSION", "0.1.0"), "The version x.y.z")
+	flag.StringVar(&commandLineValue.version, "version", "", "The version x.y.z use the git tag if not set")
 	flag.Parse()
 }
 

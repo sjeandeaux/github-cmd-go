@@ -13,6 +13,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const (
+	githubAPI       = "https://api.github.com/repos/"
+	contentType     = "Content-Type"
+	applicationJSON = "application/json"
+)
+
 //Client the http connection
 type Client struct {
 	httpClient *http.Client
@@ -99,12 +105,6 @@ func (c *Client) Upload(urlPath string, a *Asset) error {
 
 //GetReleaseByTag get the information
 func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
-	const githubAPI = "https://api.github.com/repos/"
-	const (
-		contentType     = "Content-Type"
-		applicationJSON = "application/json"
-	)
-
 	url := fmt.Sprint(githubAPI, c.owner, "/", c.repo, "/releases/tags/", tag)
 
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
@@ -129,12 +129,6 @@ func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
 
 //CreateRelease create a release
 func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
-	const githubAPI = "https://api.github.com/repos/"
-	const (
-		contentType     = "Content-Type"
-		applicationJSON = "application/json"
-	)
-
 	url := fmt.Sprint(githubAPI, c.owner, "/", c.repo, "/releases")
 	jsonValue, _ := json.Marshal(edit)
 	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonValue))

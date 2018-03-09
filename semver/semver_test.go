@@ -132,3 +132,10 @@ func TestString(t *testing.T) {
 		assert.Equal(t, data.expected, actual)
 	}
 }
+
+func TestNewGitVersionOK(t *testing.T) {
+	//TODO test with fake command
+	actual, iWantNil := semver.NewGitVersion()
+	assert.Nil(t, iWantNil)
+	assert.NotNil(t, actual)
+}
