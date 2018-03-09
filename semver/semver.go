@@ -8,7 +8,24 @@ import (
 	"strings"
 )
 
-var execCommand = exec.Command
+var executor Executor
+
+//Executor of command
+type Executor func(name string, arg ...string) *exec.Cmd
+
+// SetExecutor set the default exectuor command
+func SetExecutor(cmd Executor) {
+	executor = cmd
+}
+
+// SetExecutorWithDefault set the default executor
+func SetExecutorWithDefault() {
+	executor = exec.Command
+}
+
+func init() {
+	SetExecutorWithDefault()
+}
 
 //Position Major, Minor and Patch
 type Position int
@@ -27,7 +44,7 @@ const (
 
 // NewGitVersion get the version from git
 func NewGitVersion() (*Version, error) {
-	cmdGetLatestTag, errTag := execCommand("git", "rev-list", "--tags", "--max-count=1").Output()
+	cmdGetLatestTag, errTag := executor("git", "rev-list", "--tags", "--max-count=1").Output()
 	//not tag
 	if errTag != nil {
 		return &Version{
@@ -38,7 +55,7 @@ func NewGitVersion() (*Version, error) {
 	}
 	valueCommit := strings.TrimSpace(string(cmdGetLatestTag))
 
-	cmdTag, err := execCommand("git", "describe", "--tags", valueCommit).Output()
+	cmdTag, err := executor("git", "describe", "--tags", valueCommit).Output()
 	if err != nil {
 		return nil, err
 	}

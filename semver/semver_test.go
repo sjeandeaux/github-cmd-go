@@ -1,8 +1,12 @@
 package semver_test
 
-import "testing"
-import "github.com/stretchr/testify/assert"
-import "github.com/sjeandeaux/github-cmd-go/semver"
+import (
+	"os/exec"
+	"testing"
+
+	"github.com/sjeandeaux/github-cmd-go/semver"
+	"github.com/stretchr/testify/assert"
+)
 
 func TestNewVersionOk(t *testing.T) {
 	var inputs = []struct {
@@ -134,8 +138,68 @@ func TestString(t *testing.T) {
 }
 
 func TestNewGitVersionOK(t *testing.T) {
-	//TODO test with fake command
+	//TODO https://golang.org/src/os/exec/exec_test.go
+	fakeExectuor := func() semver.Executor {
+		return func(name string, arg ...string) *exec.Cmd {
+			switch arg[0] {
+			case "rev-list":
+				return exec.Command("echo", "response-rev-list")
+			case "describe":
+				assert.Equal(t, "response-rev-list", arg[2])
+				return exec.Command("echo", "6.6.6")
+			}
+
+			return nil
+		}
+	}
+
+	semver.SetExecutor(fakeExectuor())
+	defer semver.SetExecutorWithDefault()
+
 	actual, iWantNil := semver.NewGitVersion()
 	assert.Nil(t, iWantNil)
-	assert.NotNil(t, actual)
+	assert.Equal(t, &semver.Version{Major: 6, Minor: 6, Patch: 6}, actual)
+}
+
+func TestNewGitVersionWithoutTag(t *testing.T) {
+	//TODO https://golang.org/src/os/exec/exec_test.go
+	fakeExectuor := func() semver.Executor {
+		return func(name string, arg ...string) *exec.Cmd {
+			switch arg[0] {
+			case "rev-list":
+				return exec.Command("toutestko", "désenchantée")
+			}
+			return nil
+		}
+	}
+
+	semver.SetExecutor(fakeExectuor())
+	defer semver.SetExecutorWithDefault()
+
+	actual, iWantNil := semver.NewGitVersion()
+	assert.Nil(t, iWantNil)
+	assert.Equal(t, &semver.Version{Major: 0, Minor: 0, Patch: 0}, actual)
+}
+
+func TestNewGitVersionKo(t *testing.T) {
+	//TODO https://golang.org/src/os/exec/exec_test.go
+	fakeExectuor := func() semver.Executor {
+		return func(name string, arg ...string) *exec.Cmd {
+			switch arg[0] {
+			case "rev-list":
+				return exec.Command("echo", "response-rev-list")
+			case "describe":
+				assert.Equal(t, "response-rev-list", arg[2])
+				return exec.Command("toutestko", "désenchantée")
+			}
+			return nil
+		}
+	}
+
+	semver.SetExecutor(fakeExectuor())
+	defer semver.SetExecutorWithDefault()
+
+	actual, iWantNil := semver.NewGitVersion()
+	assert.NotNil(t, iWantNil)
+	assert.Nil(t, actual)
 }
