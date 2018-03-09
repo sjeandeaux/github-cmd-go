@@ -2,6 +2,15 @@
 
 [![Build Status](https://travis-ci.org/sjeandeaux/github-cmd-go.svg)](https://travis-ci.org/sjeandeaux/github-cmd-go) [![Coverage Status](https://coveralls.io/repos/sjeandeaux/github-cmd-go/badge.svg)](https://coveralls.io/r/sjeandeaux/github-cmd-go) [![Go Report Card](https://goreportcard.com/badge/github.com/sjeandeaux/github-cmd-go)](https://goreportcard.com/report/github.com/sjeandeaux/github-cmd-go)
 
+## git-latest
+
+The tool get the latest version in as tag if not found 0.0.0.
+
+```
+>git-latest
+0.1.0
+```
+
 ## incrementor
 
 The tool increments the verison.
