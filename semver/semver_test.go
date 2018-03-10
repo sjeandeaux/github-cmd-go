@@ -12,6 +12,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func goWantHelperProcessArgs() []string {
+	args := os.Args
+	for len(args) > 0 {
+		if args[0] == "--" {
+			args = args[1:]
+			break
+		}
+		args = args[1:]
+	}
+	if len(args) < 1 {
+		fmt.Fprintf(os.Stderr, "No command\n")
+		os.Exit(2)
+	}
+	return args
+}
 func fakeExecutor(t *testing.T, functName string) semver.Executor {
 	return func(name string, arg ...string) *exec.Cmd {
 
@@ -33,9 +48,7 @@ func fakeExecutor(t *testing.T, functName string) semver.Executor {
 		testArgs[0] = sb.String()
 		testArgs[1] = "--"
 		testArgs[2] = name
-		testArgs = append(testArgs, arg...)
-
-		cmd := exec.Command(filepath.Join(dirBase, base), testArgs...)
+		cmd := exec.Command(filepath.Join(dirBase, base), append(testArgs, arg...)...)
 		cmd.Dir = parentDir
 		cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 		return cmd
@@ -172,27 +185,28 @@ func TestString(t *testing.T) {
 }
 
 func TestNewGitVersionOK(t *testing.T) {
-	//TODO https://golang.org/src/os/exec/exec_test.go
-	fakeExectuor := func() semver.Executor {
-		return func(name string, arg ...string) *exec.Cmd {
-			switch arg[0] {
-			case "rev-list":
-				return exec.Command("echo", "response-rev-list")
-			case "describe":
-				assert.Equal(t, "response-rev-list", arg[2])
-				return exec.Command("echo", "6.6.6")
-			}
-
-			return nil
-		}
-	}
-
-	semver.SetExecutor(fakeExectuor())
+	semver.SetExecutor(fakeExecutor(t, "TestNewGitVersionOKHelper"))
 	defer semver.SetExecutorWithDefault()
-
 	actual, iWantNil := semver.NewGitVersion()
 	assert.Nil(t, iWantNil)
 	assert.Equal(t, &semver.Version{Major: 6, Minor: 6, Patch: 6}, actual)
+}
+
+func TestNewGitVersionOKHelper(*testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	defer os.Exit(0)
+	args := goWantHelperProcessArgs()
+	cmdGit := args[1]
+	if cmdGit == "rev-list" {
+		fmt.Println("commit-sha")
+		os.Exit(0)
+	} else {
+		fmt.Println("6.6.6")
+		os.Exit(0)
+	}
+
 }
 
 func TestNewGitVersionWithoutTag(t *testing.T) {
@@ -209,7 +223,6 @@ func TestNewGitVersionWithoutTagHelper(*testing.T) {
 		return
 	}
 	defer os.Exit(0)
-	//the command git `git rev-list` fails so default version
 	os.Exit(-1)
 }
 
@@ -227,27 +240,12 @@ func TestNewGitVersionKoHelper(*testing.T) {
 		return
 	}
 	defer os.Exit(0)
-
-	args := os.Args
-	println(args)
-	for len(args) > 0 {
-		if args[0] == "--" {
-			args = args[1:]
-			break
-		}
-		args = args[1:]
-	}
-	if len(args) > 1 {
-		fmt.Fprintf(os.Stderr, "No command\n")
-		os.Exit(2)
-	}
+	args := goWantHelperProcessArgs()
 	cmdGit := args[1]
-	println(cmdGit)
 	if cmdGit == "rev-list" {
 		fmt.Println("commit-sha")
 		os.Exit(0)
-	} else {
-		os.Exit(2)
 	}
+	os.Exit(-2)
 
 }
