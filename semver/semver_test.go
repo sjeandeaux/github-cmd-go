@@ -1,12 +1,46 @@
 package semver_test
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/sjeandeaux/github-cmd-go/semver"
 	"github.com/stretchr/testify/assert"
 )
+
+func fakeExecutor(t *testing.T, functName string) semver.Executor {
+	return func(name string, arg ...string) *exec.Cmd {
+
+		base := filepath.Base(os.Args[0])
+		dir := filepath.Dir(os.Args[0])
+		if dir == "." {
+			t.Skip("skipping; running test at root somehow")
+		}
+		parentDir := filepath.Dir(dir)
+		dirBase := filepath.Base(dir)
+		if dirBase == "." {
+			t.Skipf("skipping; unexpected shallow dir of %q", dir)
+		}
+		sb := strings.Builder{}
+		sb.WriteString("-test.run=")
+		sb.WriteString(functName)
+
+		testArgs := make([]string, 3)
+		testArgs[0] = sb.String()
+		testArgs[1] = "--"
+		testArgs[2] = name
+		testArgs = append(testArgs, arg...)
+
+		cmd := exec.Command(filepath.Join(dirBase, base), testArgs...)
+		cmd.Dir = parentDir
+		cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
+		return cmd
+	}
+}
 
 func TestNewVersionOk(t *testing.T) {
 	var inputs = []struct {
@@ -162,18 +196,7 @@ func TestNewGitVersionOK(t *testing.T) {
 }
 
 func TestNewGitVersionWithoutTag(t *testing.T) {
-	//TODO https://golang.org/src/os/exec/exec_test.go
-	fakeExectuor := func() semver.Executor {
-		return func(name string, arg ...string) *exec.Cmd {
-			switch arg[0] {
-			case "rev-list":
-				return exec.Command("toutestko", "désenchantée")
-			}
-			return nil
-		}
-	}
-
-	semver.SetExecutor(fakeExectuor())
+	semver.SetExecutor(fakeExecutor(t, "TestNewGitVersionWithoutTagHelper"))
 	defer semver.SetExecutorWithDefault()
 
 	actual, iWantNil := semver.NewGitVersion()
@@ -181,25 +204,50 @@ func TestNewGitVersionWithoutTag(t *testing.T) {
 	assert.Equal(t, &semver.Version{Major: 0, Minor: 0, Patch: 0}, actual)
 }
 
-func TestNewGitVersionKo(t *testing.T) {
-	//TODO https://golang.org/src/os/exec/exec_test.go
-	fakeExectuor := func() semver.Executor {
-		return func(name string, arg ...string) *exec.Cmd {
-			switch arg[0] {
-			case "rev-list":
-				return exec.Command("echo", "response-rev-list")
-			case "describe":
-				assert.Equal(t, "response-rev-list", arg[2])
-				return exec.Command("toutestko", "désenchantée")
-			}
-			return nil
-		}
+func TestNewGitVersionWithoutTagHelper(*testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
 	}
+	defer os.Exit(0)
+	//the command git `git rev-list` fails so default version
+	os.Exit(-1)
+}
 
-	semver.SetExecutor(fakeExectuor())
+func TestNewGitVersionKo(t *testing.T) {
+	semver.SetExecutor(fakeExecutor(t, "TestNewGitVersionKoHelper"))
 	defer semver.SetExecutorWithDefault()
 
 	actual, iWantNil := semver.NewGitVersion()
 	assert.NotNil(t, iWantNil)
 	assert.Nil(t, actual)
+}
+
+func TestNewGitVersionKoHelper(*testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	defer os.Exit(0)
+
+	args := os.Args
+	println(args)
+	for len(args) > 0 {
+		if args[0] == "--" {
+			args = args[1:]
+			break
+		}
+		args = args[1:]
+	}
+	if len(args) > 1 {
+		fmt.Fprintf(os.Stderr, "No command\n")
+		os.Exit(2)
+	}
+	cmdGit := args[1]
+	println(cmdGit)
+	if cmdGit == "rev-list" {
+		fmt.Println("commit-sha")
+		os.Exit(0)
+	} else {
+		os.Exit(2)
+	}
+
 }
