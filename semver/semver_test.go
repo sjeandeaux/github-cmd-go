@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/sjeandeaux/github-cmd-go/semver"
@@ -40,12 +39,8 @@ func fakeExecutor(t *testing.T, functName string) semver.Executor {
 		if dirBase == "." {
 			t.Skipf("skipping; unexpected shallow dir of %q", dir)
 		}
-		sb := strings.Builder{}
-		sb.WriteString("-test.run=")
-		sb.WriteString(functName)
-
 		testArgs := make([]string, 3)
-		testArgs[0] = sb.String()
+		testArgs[0] = fmt.Sprint("-test.run=", functName)
 		testArgs[1] = "--"
 		testArgs[2] = name
 		cmd := exec.Command(filepath.Join(dirBase, base), append(testArgs, arg...)...)
