@@ -10,14 +10,14 @@ import (
 	internalos "github.com/sjeandeaux/github-cmd-go/internal/os"
 )
 
-//commandLineArgs the arguments command line
-type commandLineArgs struct {
+//commandLine the arguments command line
+type commandLine struct {
 	position string
 	version  string
 }
 
 //increment the version
-func (c *commandLineArgs) increment() (*semver.Version, error) {
+func (c *commandLine) increment() (*semver.Version, error) {
 	var v *semver.Version
 	var err error
 	if c.version == "" {
@@ -32,9 +32,7 @@ func (c *commandLineArgs) increment() (*semver.Version, error) {
 	return v.Increment(c.position)
 }
 
-var commandLineValue = new(commandLineArgs)
-
-func init() {
+func (c *commandLine) init() {
 	//flag
 	log.SetPrefix("incrementator")
 
@@ -44,10 +42,20 @@ func init() {
 	flag.Parse()
 }
 
-func main() {
+func (c *commandLine) main() {
 	if value, err := commandLineValue.increment(); err != nil {
 		log.Fatal(err)
 	} else {
 		fmt.Print(value)
 	}
+}
+
+var commandLineValue = new(commandLine)
+
+func init() {
+	commandLineValue.init()
+}
+
+func main() {
+	commandLineValue.main()
 }

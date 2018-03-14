@@ -71,8 +71,14 @@ dependencies: ## download the dependencies
 	dep ensure
 
 .PHONY: build
-build: clean fmt vet
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o ./target/${APPL} ./cmd/${APPL}
+build: clean fmt vet # build the application APPL
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/${APPL} ./cmd/${APPL}
+
+.PHONY: build-all
+build-all: clean fmt vet # build the application APPL
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/git-latest ./cmd/git-latest
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/incrementor ./cmd/incrementor
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/associator ./cmd/associator
 
 .PHONY: run
 run: build ## Run command line
