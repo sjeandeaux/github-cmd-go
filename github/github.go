@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	githubAPI       = "https://api.github.com/repos/"
+	githubAPI       = "https://api.github.com/repos"
 	contentType     = "Content-Type"
 	applicationJSON = "application/json"
 )
@@ -22,9 +22,9 @@ const (
 //Client the http connection
 type Client struct {
 	httpClient *http.Client
-	token      string
 	owner      string
 	repo       string
+	baseURL    string
 }
 
 //NewClient init the client
@@ -35,11 +35,21 @@ func NewClient(token, owner, repo string) *Client {
 
 	//Get the UploadURL
 	oauthClient := oauth2.NewClient(oauth2.NoContext, ts)
+	return createClient(
+		oauthClient,
+		owner,
+		repo,
+	)
+
+}
+
+//NewClient init the client
+func createClient(httpClient *http.Client, owner, repo string) *Client {
 	return &Client{
-		httpClient: oauthClient,
-		token:      token,
+		httpClient: httpClient,
 		owner:      owner,
 		repo:       repo,
+		baseURL:    githubAPI,
 	}
 
 }
@@ -105,8 +115,8 @@ func (c *Client) Upload(urlPath string, a *Asset) error {
 
 //GetReleaseByTag get the information
 func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
-	url := fmt.Sprint(githubAPI, c.owner, "/", c.repo, "/releases/tags/", tag)
-
+	url := fmt.Sprint(c.baseURL, "/", c.owner, "/", c.repo, "/releases/tags/", tag)
+	println(url)
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add(contentType, applicationJSON)
 	resp, err := c.httpClient.Do(request)
