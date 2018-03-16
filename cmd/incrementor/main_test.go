@@ -9,11 +9,11 @@ import (
 
 func TestCommandLineIncrementOk(t *testing.T) {
 	var inputs = []struct {
-		input    commandLineArgs
+		input    commandLine
 		expected *semver.Version
 	}{
 		{
-			input: commandLineArgs{
+			input: commandLine{
 				position: semver.PositionMajor,
 				version:  "0.1.0",
 			},
@@ -34,18 +34,18 @@ func TestCommandLineIncrementOk(t *testing.T) {
 func TestCommandLineIncrementKo(t *testing.T) {
 
 	var inputs = []struct {
-		input       commandLineArgs
+		input       commandLine
 		expectedErr string
 	}{
 		{
-			input: commandLineArgs{
+			input: commandLine{
 				position: semver.PositionMajor,
 				version:  "bad version",
 			},
 			expectedErr: "",
 		},
 		{
-			input: commandLineArgs{
+			input: commandLine{
 				position: "bad position",
 				version:  "0.1.0",
 			},
