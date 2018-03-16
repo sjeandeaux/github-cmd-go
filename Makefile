@@ -75,7 +75,7 @@ build: clean fmt vet # build the application APPL
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/${APPL} ./cmd/${APPL}
 
 .PHONY: build-all
-build-all: clean fmt vet # build the application APPL
+build-all: clean fmt vet # build all (TODO find a better way)
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/git-latest ./cmd/git-latest
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/incrementor ./cmd/incrementor
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo $(LDFLAGS) -o ./target/associator ./cmd/associator
