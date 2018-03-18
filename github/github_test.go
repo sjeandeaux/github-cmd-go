@@ -161,6 +161,20 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 			want:    &Release{},
 			wantErr: true,
 		},
+		{
+			name: "no server",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    "http://localhost:666",
+			},
+			args: args{
+				tag: "6.6.6.BadPayload",
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -271,6 +285,22 @@ func TestClient_CreateRelease(t *testing.T) {
 				owner:      "Owner",
 				repo:       "Repo",
 				baseURL:    ts.URL,
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "no server",
+			args: args{
+				&EditRelease{
+					TagName: "6.6.6.NotFound",
+				},
+			},
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    "http://localhost:666",
 			},
 			want:    nil,
 			wantErr: true,
