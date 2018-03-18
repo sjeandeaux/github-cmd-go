@@ -1,6 +1,7 @@
 package github
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -83,12 +84,16 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.RequestURI {
-		case "/Owner/Repo/releases/tags/6.6.6":
+		case "/Owner/Repo/releases/tags/6.6.6.OK":
+			w.WriteHeader(http.StatusOK)
 			fmt.Fprintln(w, realeseByTag)
-		case "/Owner/Repo/releases/tags/StatusNotFound":
+		case "/Owner/Repo/releases/tags/6.6.6.NotFound":
 			w.WriteHeader(http.StatusNotFound)
-		case "/Owner/Repo/releases/tags/BadPayload":
+		case "/Owner/Repo/releases/tags/6.6.6.BadPayload":
+			w.WriteHeader(http.StatusOK)
 			fmt.Fprintln(w, "no...")
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 
 	}))
@@ -119,7 +124,7 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 				baseURL:    ts.URL,
 			},
 			args: args{
-				tag: "6.6.6",
+				tag: "6.6.6.OK",
 			},
 			want: &Release{
 				TagName:           "v1.0.0",
@@ -137,7 +142,7 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 				baseURL:    ts.URL,
 			},
 			args: args{
-				tag: "StatusNotFound",
+				tag: "6.6.6.NotFound",
 			},
 			want:    nil,
 			wantErr: true,
@@ -151,7 +156,7 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 				baseURL:    ts.URL,
 			},
 			args: args{
-				tag: "BadPayload",
+				tag: "6.6.6.BadPayload",
 			},
 			want:    &Release{},
 			wantErr: true,
@@ -179,8 +184,27 @@ func TestClient_GetReleaseByTag(t *testing.T) {
 
 func TestClient_CreateRelease(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
-		fmt.Fprintln(w, realeseByTag)
+
+		input := &EditRelease{}
+		b := r.Body
+		if b != nil {
+			defer b.Close()
+			json.NewDecoder(b).Decode(input)
+		}
+
+		switch input.TagName {
+		case "6.6.6.OK":
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprintln(w, realeseByTag)
+		case "6.6.6.NotFound":
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintln(w, realeseByTag)
+		case "6.6.6.BadPayload":
+			w.WriteHeader(http.StatusCreated)
+			fmt.Fprintln(w, "no...")
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}))
 	defer ts.Close()
 	type fields struct {
@@ -203,7 +227,7 @@ func TestClient_CreateRelease(t *testing.T) {
 			name: "OK",
 			args: args{
 				&EditRelease{
-					TagName: "v1.0.0",
+					TagName: "6.6.6.OK",
 				},
 			},
 			fields: fields{
@@ -218,6 +242,38 @@ func TestClient_CreateRelease(t *testing.T) {
 				UploadURLTemplate: "https://uploads.github.com/repos/octocat/Hello-World/releases/1/assets{?name,label}",
 			},
 			wantErr: false,
+		},
+		{
+			name: "BadPayload",
+			args: args{
+				&EditRelease{
+					TagName: "6.6.6.BadPayload",
+				},
+			},
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			want:    &Release{},
+			wantErr: true,
+		},
+		{
+			name: "NotFound",
+			args: args{
+				&EditRelease{
+					TagName: "6.6.6.NotFound",
+				},
+			},
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
