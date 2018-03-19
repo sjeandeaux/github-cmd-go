@@ -19,6 +19,23 @@ const (
 	applicationJSON = "application/json"
 )
 
+//Release we want only the upload url.
+type Release struct {
+	UploadURLTemplate string `json:"upload_url"`
+	TagName           string `json:"tag_name"`
+	URL               string `json:"url"`
+}
+
+//EditRelease information to send to release edition https://developer.github.com/v3/repos/releases/#edit-a-release
+type EditRelease struct {
+	TagName         string `json:"tag_name"`
+	Name            string `json:"name,omitempty"`
+	TargetCommitish string `json:"target_commitish,omitempty"`
+	Body            string `json:"body,omitempty"`
+	Draft           bool   `json:"draft,omitempty"`
+	Prerelease      bool   `json:"prerelease,omitempty"`
+}
+
 //Client the http connection
 type Client struct {
 	httpClient *http.Client
@@ -35,30 +52,13 @@ func NewClient(token, owner, repo string) *Client {
 
 	//Get the UploadURL
 	oauthClient := oauth2.NewClient(oauth2.NoContext, ts)
-	return createClient(
-		oauthClient,
-		owner,
-		repo,
-	)
-
-}
-
-//NewClient init the client
-func createClient(httpClient *http.Client, owner, repo string) *Client {
 	return &Client{
-		httpClient: httpClient,
+		httpClient: oauthClient,
 		owner:      owner,
 		repo:       repo,
 		baseURL:    githubAPI,
 	}
 
-}
-
-//Release we want only the upload url.
-type Release struct {
-	UploadURLTemplate string `json:"upload_url"`
-	TagName           string `json:"tag_name"`
-	URL               string `json:"url"`
 }
 
 //UploadURL the upload url for tag
@@ -70,30 +70,10 @@ func (o *Release) UploadURL() string {
 	return o.UploadURLTemplate
 }
 
-//EditRelease information to send to release edition https://developer.github.com/v3/repos/releases/#edit-a-release
-type EditRelease struct {
-	TagName         string `json:"tag_name"`
-	Name            string `json:"name,omitempty"`
-	TargetCommitish string `json:"target_commitish,omitempty"`
-	Body            string `json:"body,omitempty"`
-	Draft           bool   `json:"draft,omitempty"`
-	Prerelease      bool   `json:"prerelease,omitempty"`
-}
-
 //Upload on urlPath
 func (c *Client) Upload(urlPath string, a *Asset) error {
-	file, err := a.reader()
-	defer file.Close()
-	if err != nil {
-		return err
-	}
 
-	size, err := a.size()
-	if err != nil {
-		return err
-	}
-
-	request, err := a.request(urlPath, file, size)
+	request, err := a.request(urlPath)
 	if err != nil {
 		return err
 	}
@@ -106,7 +86,7 @@ func (c *Client) Upload(urlPath string, a *Asset) error {
 	if err != nil {
 		return err
 	}
-	if resp.StatusCode != 201 {
+	if resp.StatusCode != http.StatusCreated {
 		b, _ := ioutil.ReadAll(resp.Body)
 		return fmt.Errorf("failed %d %s", resp.StatusCode, b)
 	}
@@ -128,7 +108,7 @@ func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		b, _ := ioutil.ReadAll(resp.Body)
 		return nil, fmt.Errorf("failed %d %s", resp.StatusCode, b)
 	}
@@ -152,7 +132,7 @@ func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != 201 {
+	if resp.StatusCode != http.StatusCreated {
 		b, _ := ioutil.ReadAll(resp.Body)
 		return nil, fmt.Errorf("failed %d %s", resp.StatusCode, b)
 	}
