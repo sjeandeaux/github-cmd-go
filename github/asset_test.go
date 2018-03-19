@@ -2,9 +2,12 @@ package github
 
 import (
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAsset_size(t *testing.T) {
@@ -106,6 +109,90 @@ func TestAsset_reader(t *testing.T) {
 			if (got != nil) != (tt.want != nil) {
 				t.Errorf("Asset.reader() = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func TestAsset_request(t *testing.T) {
+	type fields struct {
+		File        string
+		Name        string
+		Label       string
+		ContentType string
+	}
+	type args struct {
+		urlPath string
+	}
+
+	fi, _ := os.Open(filepath.Join("testdata", "data"))
+	defer fi.Close()
+	request, _ := http.NewRequest(http.MethodPost, "urlPath", fi)
+	request.ContentLength = 4
+
+	//header
+	request.Header.Add("Content-Type", "application/binary")
+
+	//query
+	query := request.URL.Query()
+	query.Add("name", "fileName")
+	query.Add("label", "Label")
+	request.URL.RawQuery = query.Encode()
+
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *http.Request
+		wantErr bool
+	}{
+		{
+			name: "failed reader",
+			fields: fields{
+				File: "not found",
+			},
+			args: args{
+				urlPath: "urlPath",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+
+		{
+			name: "ok",
+			fields: fields{
+				File:        filepath.Join("testdata", "data"),
+				ContentType: "application/binary",
+				Name:        "fileName",
+				Label:       "Label",
+			},
+			args: args{
+				urlPath: "urlPath",
+			},
+			want:    request,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &Asset{
+				File:        tt.fields.File,
+				Name:        tt.fields.Name,
+				Label:       tt.fields.Label,
+				ContentType: tt.fields.ContentType,
+			}
+			got, err := a.request(tt.args.urlPath)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Asset.request() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			//TODO test!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			if tt.want != nil {
+				tt.want.Body = nil
+			}
+			if got != nil {
+				got.Body = nil
+			}
+			assert.Equal(t, got, tt.want)
 		})
 	}
 }
