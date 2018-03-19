@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const realeseByTag = `{
@@ -448,9 +450,28 @@ func TestClient_Upload(t *testing.T) {
 				baseURL:    ts.URL,
 			},
 			args: args{
-				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
+				urlPath: fmt.Sprint(ts.URL, "/6.6.6.OK"),
 				a: &Asset{
 					File:        filepath.Join("testdata", "not-found"),
+					ContentType: "application/binary",
+					Name:        "fileName",
+					Label:       "Label",
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "ko server",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
+				a: &Asset{
+					File:        filepath.Join("testdata", "data"),
 					ContentType: "application/binary",
 					Name:        "fileName",
 					Label:       "Label",
@@ -470,6 +491,42 @@ func TestClient_Upload(t *testing.T) {
 			if err := c.Upload(tt.args.urlPath, tt.args.a); (err != nil) != tt.wantErr {
 				t.Errorf("Client.Upload() error = %v, wantErr %v", err, tt.wantErr)
 			}
+		})
+	}
+}
+
+func TestNewClient(t *testing.T) {
+	type args struct {
+		token string
+		owner string
+		repo  string
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Client
+	}{
+		{
+			name: "ok",
+			args: args{
+				token: "121212",
+				owner: "owner",
+				repo:  "repo",
+			},
+			want: &Client{
+				httpClient: nil,
+				owner:      "owner",
+				repo:       "repo",
+				baseURL:    githubAPI,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewClient(tt.args.token, tt.args.owner, tt.args.repo)
+			assert.Equal(t, tt.want.baseURL, actual.baseURL)
+			assert.Equal(t, tt.want.owner, actual.owner)
+			assert.Equal(t, tt.want.repo, actual.repo)
 		})
 	}
 }
