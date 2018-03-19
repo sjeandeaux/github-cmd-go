@@ -76,7 +76,7 @@ func (o *Release) UploadURL() string {
 //Upload on urlPath
 func (c *Client) Upload(urlPath string, a *Asset) error {
 
-	request, err := a.request(fmt.Sprint(c.baseURL, "/", urlPath))
+	request, err := a.request(urlPath)
 	if err != nil {
 		return err
 	}

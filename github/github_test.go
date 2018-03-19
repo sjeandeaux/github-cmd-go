@@ -373,7 +373,15 @@ func TestRelease_UploadURL(t *testing.T) {
 
 func TestClient_Upload(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusCreated)
+		println(r.RequestURI)
+		switch r.RequestURI {
+		case "/6.6.6.OK?label=Label&name=fileName":
+			w.WriteHeader(http.StatusCreated)
+		case "/6.6.6.KO?label=Label&name=fileName":
+			w.WriteHeader(http.StatusNotFound)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}))
 	defer ts.Close()
 
@@ -402,7 +410,7 @@ func TestClient_Upload(t *testing.T) {
 				baseURL:    ts.URL,
 			},
 			args: args{
-				urlPath: "/path",
+				urlPath: fmt.Sprint(ts.URL, "/6.6.6.OK"),
 				a: &Asset{
 					File:        filepath.Join("testdata", "data"),
 					ContentType: "application/binary",
@@ -411,6 +419,25 @@ func TestClient_Upload(t *testing.T) {
 				},
 			},
 			wantErr: false,
+		},
+		{
+			name: "ko",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
+				a: &Asset{
+					File:        filepath.Join("testdata", "data"),
+					ContentType: "application/binary",
+					Name:        "fileName",
+					Label:       "Label",
+				},
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
