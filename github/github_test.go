@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -365,6 +366,63 @@ func TestRelease_UploadURL(t *testing.T) {
 			}
 			if got := o.UploadURL(); got != tt.want {
 				t.Errorf("Release.UploadURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestClient_Upload(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+	}))
+	defer ts.Close()
+
+	type fields struct {
+		httpClient *http.Client
+		owner      string
+		repo       string
+		baseURL    string
+	}
+	type args struct {
+		urlPath string
+		a       *Asset
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: "/path",
+				a: &Asset{
+					File:        filepath.Join("testdata", "data"),
+					ContentType: "application/binary",
+					Name:        "fileName",
+					Label:       "Label",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Client{
+				httpClient: tt.fields.httpClient,
+				owner:      tt.fields.owner,
+				repo:       tt.fields.repo,
+				baseURL:    tt.fields.baseURL,
+			}
+			if err := c.Upload(tt.args.urlPath, tt.args.a); (err != nil) != tt.wantErr {
+				t.Errorf("Client.Upload() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

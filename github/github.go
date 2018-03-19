@@ -21,9 +21,12 @@ const (
 
 //Release we want only the upload url.
 type Release struct {
+	//UploadURLTemplate the upload url template
 	UploadURLTemplate string `json:"upload_url"`
-	TagName           string `json:"tag_name"`
-	URL               string `json:"url"`
+	//TagName the tag name
+	TagName string `json:"tag_name"`
+	//URL the URL
+	URL string `json:"url"`
 }
 
 //EditRelease information to send to release edition https://developer.github.com/v3/repos/releases/#edit-a-release
@@ -73,7 +76,7 @@ func (o *Release) UploadURL() string {
 //Upload on urlPath
 func (c *Client) Upload(urlPath string, a *Asset) error {
 
-	request, err := a.request(urlPath)
+	request, err := a.request(fmt.Sprint(c.baseURL, "/", urlPath))
 	if err != nil {
 		return err
 	}
@@ -140,6 +143,7 @@ func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
 	return onlyURL, decode(resp.Body, onlyURL)
 }
 
+//decode decode the reader in i
 func decode(r io.Reader, i interface{}) error {
 	return json.NewDecoder(r).Decode(i)
 }
