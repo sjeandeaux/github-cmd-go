@@ -325,3 +325,47 @@ func TestClient_CreateRelease(t *testing.T) {
 		})
 	}
 }
+
+func TestRelease_UploadURL(t *testing.T) {
+	type fields struct {
+		UploadURLTemplate string
+		TagName           string
+		URL               string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   string
+	}{
+		{
+			fields: fields{
+				UploadURLTemplate: "http://bob-the-sponge.com{?label, name}",
+			},
+			want: "http://bob-the-sponge.com",
+		},
+		{
+			fields: fields{
+				UploadURLTemplate: "http://bob-the-sponge.com",
+			},
+			want: "http://bob-the-sponge.com",
+		},
+		{
+			fields: fields{
+				UploadURLTemplate: "",
+			},
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &Release{
+				UploadURLTemplate: tt.fields.UploadURLTemplate,
+				TagName:           tt.fields.TagName,
+				URL:               tt.fields.URL,
+			}
+			if got := o.UploadURL(); got != tt.want {
+				t.Errorf("Release.UploadURL() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
