@@ -439,6 +439,25 @@ func TestClient_Upload(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "ko not found",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
+				a: &Asset{
+					File:        filepath.Join("testdata", "not-found"),
+					ContentType: "application/binary",
+					Name:        "fileName",
+					Label:       "Label",
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
