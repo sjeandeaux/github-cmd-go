@@ -479,6 +479,25 @@ func TestClient_Upload(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "ko server",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: "http://localhost:666/6.6.6.KO",
+				a: &Asset{
+					File:        filepath.Join("testdata", "data"),
+					ContentType: "application/binary",
+					Name:        "fileName",
+					Label:       "Label",
+				},
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
