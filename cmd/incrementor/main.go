@@ -18,14 +18,7 @@ type commandLine struct {
 
 //increment the version
 func (c *commandLine) increment() (*semver.Version, error) {
-	var v *semver.Version
-	var err error
-	if c.version == "" {
-		v, err = semver.NewGitVersion()
-	} else {
-		v, err = semver.NewVersion(c.version)
-	}
-
+	v, err := semver.NewVersion(c.version)
 	if err != nil {
 		return nil, err
 	}
