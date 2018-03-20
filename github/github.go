@@ -76,10 +76,33 @@ func (o *Release) UploadURL() string {
 //Upload on urlPath
 func (c *Client) Upload(urlPath string, a *Asset) error {
 
-	request, err := a.request(urlPath)
+	const (
+		name  = "name"
+		label = "label"
+	)
+
+	body, err := a.reader()
 	if err != nil {
 		return err
 	}
+
+	size, err := a.size()
+	if err != nil {
+		return err
+	}
+
+	//body and size
+	request, _ := http.NewRequest(http.MethodPost, urlPath, body)
+	request.ContentLength = size
+	//header
+	request.Header.Add(contentType, a.ContentType)
+
+	//query
+	query := request.URL.Query()
+	query.Add(name, a.Name)
+	query.Add(label, a.Label)
+	request.URL.RawQuery = query.Encode()
+
 	resp, err := c.httpClient.Do(request)
 	defer func() {
 		if resp != nil && resp.Body != nil {

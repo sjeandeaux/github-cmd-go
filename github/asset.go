@@ -2,7 +2,6 @@ package github
 
 import (
 	"io"
-	"net/http"
 	"os"
 )
 
@@ -30,36 +29,4 @@ func (a *Asset) size() (int64, error) {
 		return -1, err
 	}
 	return fileStat.Size(), nil
-}
-
-//request the request to upload asset on github
-func (a *Asset) request(urlPath string) (*http.Request, error) {
-
-	const (
-		name  = "name"
-		label = "label"
-	)
-
-	body, err := a.reader()
-	if err != nil {
-		return nil, err
-	}
-
-	size, err := a.size()
-	if err != nil {
-		return nil, err
-	}
-
-	//body and size
-	request, _ := http.NewRequest(http.MethodPost, urlPath, body)
-	request.ContentLength = size
-	//header
-	request.Header.Add(contentType, a.ContentType)
-
-	//query
-	query := request.URL.Query()
-	query.Add(name, a.Name)
-	query.Add(label, a.Label)
-	request.URL.RawQuery = query.Encode()
-	return request, nil
 }
