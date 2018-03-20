@@ -15,6 +15,13 @@ type gitVersionTest struct {
 	err string
 }
 
+func Test_defaultGitVersion_GetCurrentVersion(t *testing.T) {
+	defaultGitVersion := defaultGitVersion{}
+	value, err := defaultGitVersion.GetCurrentVersion()
+	assert.NotNil(t, value)
+	assert.Nil(t, err)
+}
+
 func (g *gitVersionTest) GetCurrentVersion() (*semver.Version, error) {
 	if g.err != "" {
 		return nil, errors.New(g.err)
