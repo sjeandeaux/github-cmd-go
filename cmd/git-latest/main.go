@@ -5,8 +5,9 @@ import (
 )
 
 var commandLineValue = commandLine{
-	stdout: os.Stdout,
-	stderr: os.Stderr,
+	stdout:     os.Stdout,
+	stderr:     os.Stderr,
+	gitVersion: &defaultGitVersion{},
 }
 
 func init() {
