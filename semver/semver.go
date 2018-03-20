@@ -95,7 +95,7 @@ func (v *Version) Increment(po string) (*Version, error) {
 			Patch: v.Patch + 1,
 		}, nil
 	default:
-		return nil, fmt.Errorf("%q is unknowndd", po)
+		return nil, fmt.Errorf("%q is unknown", po)
 	}
 }
 

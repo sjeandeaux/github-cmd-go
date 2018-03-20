@@ -151,7 +151,7 @@ func TestIncrementKo(t *testing.T) {
 		{
 			position:      "unknown",
 			value:         &semver.Version{Major: 332, Minor: 666, Patch: 999},
-			expectedError: "\"unknown\" is unknowndd",
+			expectedError: "\"unknown\" is unknown",
 		},
 	}
 
