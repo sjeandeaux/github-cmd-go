@@ -11,29 +11,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type gitVersionTest struct {
-	err string
-}
-
-func Test_defaultGitVersion_GetCurrentVersion(t *testing.T) {
-	defaultGitVersion := defaultGitVersion{}
-	value, err := defaultGitVersion.GetCurrentVersion()
-	t.Log(value)
-	t.Log(err)
-}
-
-func (g *gitVersionTest) GetCurrentVersion() (*semver.Version, error) {
-	if g.err != "" {
-		return nil, errors.New(g.err)
+func GetCurrentVersion(err string) func() (*semver.Version, error) {
+	return func() (*semver.Version, error) {
+		if err != "" {
+			return nil, errors.New(err)
+		}
+		return &semver.Version{Major: 6, Minor: 6, Patch: 6}, nil
 	}
-	return &semver.Version{Major: 6, Minor: 6, Patch: 6}, nil
 }
 
 func Test_commandLine_main(t *testing.T) {
 	type fields struct {
 		stdout     io.Writer
 		stderr     io.Writer
-		gitVersion gitVersion
+		gitVersion func() (*semver.Version, error)
 	}
 
 	type wants struct {
@@ -50,7 +41,7 @@ func Test_commandLine_main(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				gitVersion: &gitVersionTest{err: ""},
+				gitVersion: GetCurrentVersion(""),
 				stdout:     bytes.NewBufferString(""),
 				stderr:     bytes.NewBufferString(""),
 			},
@@ -64,7 +55,7 @@ func Test_commandLine_main(t *testing.T) {
 		{
 			name: "ok",
 			fields: fields{
-				gitVersion: &gitVersionTest{err: "Houston problem"},
+				gitVersion: GetCurrentVersion("Houston problem"),
 				stdout:     bytes.NewBufferString(""),
 				stderr:     bytes.NewBufferString(""),
 			},

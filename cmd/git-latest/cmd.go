@@ -8,32 +8,21 @@ import (
 	"github.com/sjeandeaux/github-cmd-go/semver"
 )
 
-//GitVersion get the git version
-type gitVersion interface {
-	GetCurrentVersion() (*semver.Version, error)
-}
-
-type defaultGitVersion struct{}
-
-//GetCurrentVersion get the current version git
-func (*defaultGitVersion) GetCurrentVersion() (*semver.Version, error) {
-	return semver.NewGitVersion()
-}
-
 type commandLine struct {
 	stdout     io.Writer
 	stderr     io.Writer
-	gitVersion gitVersion
+	gitVersion func() (*semver.Version, error)
 }
 
 func (c *commandLine) init() {
 	//flag
 	log.SetPrefix("git-latest")
 	log.SetOutput(c.stderr)
+	c.gitVersion = semver.NewGitVersion
 }
 
 func (c *commandLine) main() int {
-	value, err := c.gitVersion.GetCurrentVersion()
+	value, err := c.gitVersion()
 	if err != nil {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return 1
