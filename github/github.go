@@ -73,20 +73,23 @@ func (o *Release) UploadURL() string {
 	return o.UploadURLTemplate
 }
 
+//UploadInformation we need file and size
+type UploadInformation interface {
+	reader() (io.ReadCloser, error)
+	size() (int64, error)
+	headers() map[string]string
+	parameters() map[string]string
+}
+
 //Upload on urlPath
-func (c *Client) Upload(urlPath string, a *Asset) error {
-
-	const (
-		name  = "name"
-		label = "label"
-	)
-
-	body, err := a.reader()
+func (c *Client) Upload(urlPath string, u UploadInformation) error {
+	body, err := u.reader()
+	defer body.Close()
 	if err != nil {
 		return err
 	}
 
-	size, err := a.size()
+	size, err := u.size()
 	if err != nil {
 		return err
 	}
@@ -95,12 +98,15 @@ func (c *Client) Upload(urlPath string, a *Asset) error {
 	request, _ := http.NewRequest(http.MethodPost, urlPath, body)
 	request.ContentLength = size
 	//header
-	request.Header.Add(contentType, a.ContentType)
+	for k, v := range u.headers() {
+		request.Header.Add(k, v)
+	}
 
 	//query
 	query := request.URL.Query()
-	query.Add(name, a.Name)
-	query.Add(label, a.Label)
+	for k, v := range u.parameters() {
+		query.Add(k, v)
+	}
 	request.URL.RawQuery = query.Encode()
 
 	resp, err := c.httpClient.Do(request)

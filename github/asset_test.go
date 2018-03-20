@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 )
 
@@ -105,6 +106,86 @@ func TestAsset_reader(t *testing.T) {
 			}
 			if (got != nil) != (tt.want != nil) {
 				t.Errorf("Asset.reader() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAsset_headers(t *testing.T) {
+	type fields struct {
+		File        string
+		Name        string
+		Label       string
+		ContentType string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   map[string]string
+	}{
+		{
+			name: "ok",
+			fields: fields{
+				File:        "not found",
+				Name:        "bob",
+				Label:       "sponge",
+				ContentType: "happy",
+			},
+			want: map[string]string{
+				"Content-Type": "happy",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &Asset{
+				File:        tt.fields.File,
+				Name:        tt.fields.Name,
+				Label:       tt.fields.Label,
+				ContentType: tt.fields.ContentType,
+			}
+			if got := a.headers(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Asset.headers() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAsset_parameters(t *testing.T) {
+	type fields struct {
+		File        string
+		Name        string
+		Label       string
+		ContentType string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   map[string]string
+	}{
+		{
+			fields: fields{
+				File:        "not found",
+				Name:        "bob",
+				Label:       "sponge",
+				ContentType: "happy",
+			},
+			want: map[string]string{
+				"name":  "bob",
+				"label": "sponge",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := &Asset{
+				File:        tt.fields.File,
+				Name:        tt.fields.Name,
+				Label:       tt.fields.Label,
+				ContentType: tt.fields.ContentType,
+			}
+			if got := a.parameters(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Asset.parameters() = %v, want %v", got, tt.want)
 			}
 		})
 	}

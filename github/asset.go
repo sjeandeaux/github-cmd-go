@@ -17,6 +17,8 @@ type Asset struct {
 	ContentType string
 }
 
+var _ UploadInformation = &Asset{}
+
 //reader reader of asset
 func (a *Asset) reader() (io.ReadCloser, error) {
 	return os.Open(a.File)
@@ -29,4 +31,23 @@ func (a *Asset) size() (int64, error) {
 		return -1, err
 	}
 	return fileStat.Size(), nil
+}
+
+//headers headers http
+func (a *Asset) headers() map[string]string {
+	return map[string]string{
+		contentType: a.ContentType,
+	}
+}
+
+//parameters for upload
+func (a *Asset) parameters() map[string]string {
+	const (
+		name  = "name"
+		label = "label"
+	)
+	return map[string]string{
+		name:  a.Name,
+		label: a.Label,
+	}
 }

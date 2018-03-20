@@ -2,15 +2,20 @@ package github
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+var fileOK = filepath.Join("testdata", "data")
 
 const realeseByTag = `{
 	"url": "https://api.github.com/repos/octocat/Hello-World/releases/1",
@@ -373,6 +378,19 @@ func TestRelease_UploadURL(t *testing.T) {
 	}
 }
 
+//uploadInformationFailOnSize we can't get the size
+type uploadInformationFailOnSize struct {
+	Asset
+}
+
+func (a *uploadInformationFailOnSize) reader() (io.ReadCloser, error) {
+	return os.Open(fileOK)
+}
+
+func (a *uploadInformationFailOnSize) size() (int64, error) {
+	return -1, errors.New("Nooooooooooooo")
+}
+
 func TestClient_Upload(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		println(r.RequestURI)
@@ -395,7 +413,7 @@ func TestClient_Upload(t *testing.T) {
 	}
 	type args struct {
 		urlPath string
-		a       *Asset
+		a       UploadInformation
 	}
 	tests := []struct {
 		name    string
@@ -414,7 +432,7 @@ func TestClient_Upload(t *testing.T) {
 			args: args{
 				urlPath: fmt.Sprint(ts.URL, "/6.6.6.OK"),
 				a: &Asset{
-					File:        filepath.Join("testdata", "data"),
+					File:        fileOK,
 					ContentType: "application/binary",
 					Name:        "fileName",
 					Label:       "Label",
@@ -433,7 +451,7 @@ func TestClient_Upload(t *testing.T) {
 			args: args{
 				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
 				a: &Asset{
-					File:        filepath.Join("testdata", "data"),
+					File:        fileOK,
 					ContentType: "application/binary",
 					Name:        "fileName",
 					Label:       "Label",
@@ -471,7 +489,7 @@ func TestClient_Upload(t *testing.T) {
 			args: args{
 				urlPath: fmt.Sprint(ts.URL, "/6.6.6.KO"),
 				a: &Asset{
-					File:        filepath.Join("testdata", "data"),
+					File:        fileOK,
 					ContentType: "application/binary",
 					Name:        "fileName",
 					Label:       "Label",
@@ -490,11 +508,25 @@ func TestClient_Upload(t *testing.T) {
 			args: args{
 				urlPath: "http://localhost:666/6.6.6.KO",
 				a: &Asset{
-					File:        filepath.Join("testdata", "data"),
+					File:        fileOK,
 					ContentType: "application/binary",
 					Name:        "fileName",
 					Label:       "Label",
 				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "ko size",
+			fields: fields{
+				httpClient: ts.Client(),
+				owner:      "Owner",
+				repo:       "Repo",
+				baseURL:    ts.URL,
+			},
+			args: args{
+				urlPath: "http://localhost:666/6.6.6.KO",
+				a:       &uploadInformationFailOnSize{},
 			},
 			wantErr: true,
 		},
