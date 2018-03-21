@@ -63,12 +63,38 @@ func Test_commandLine_main(t *testing.T) {
 		wants  wants
 	}{
 		{
-			name: "ok",
+			name: "ok create true",
 			fields: fields{
 				token:       "",
 				owner:       "",
 				repo:        "",
 				create:      true,
+				file:        "",
+				tag:         "",
+				name:        "",
+				label:       "",
+				contentType: "",
+				githubClient: &githubClientTest{
+					errorCreateRelease:   nil,
+					errorGetReleaseByTag: nil,
+					errorUpload:          nil,
+				},
+				stdout: bytes.NewBufferString(""),
+				stderr: bytes.NewBufferString(""),
+			},
+			wants: wants{
+				exitCode: 0,
+				stdout:   "",
+				stderr:   "",
+			},
+		},
+		{
+			name: "ok create false",
+			fields: fields{
+				token:       "",
+				owner:       "",
+				repo:        "",
+				create:      false,
 				file:        "",
 				tag:         "",
 				name:        "",
