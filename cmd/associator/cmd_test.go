@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"testing"
 
@@ -112,6 +113,84 @@ func Test_commandLine_main(t *testing.T) {
 				exitCode: 0,
 				stdout:   "",
 				stderr:   "",
+			},
+		},
+		{
+			name: "ko create false",
+			fields: fields{
+				token:       "",
+				owner:       "",
+				repo:        "",
+				create:      false,
+				file:        "",
+				tag:         "",
+				name:        "",
+				label:       "",
+				contentType: "",
+				githubClient: &githubClientTest{
+					errorCreateRelease:   nil,
+					errorGetReleaseByTag: errors.New("booooum"),
+					errorUpload:          nil,
+				},
+				stdout: bytes.NewBufferString(""),
+				stderr: bytes.NewBufferString(""),
+			},
+			wants: wants{
+				exitCode: 1,
+				stdout:   "",
+				stderr:   "booooum",
+			},
+		},
+		{
+			name: "ko create true",
+			fields: fields{
+				token:       "",
+				owner:       "",
+				repo:        "",
+				create:      true,
+				file:        "",
+				tag:         "",
+				name:        "",
+				label:       "",
+				contentType: "",
+				githubClient: &githubClientTest{
+					errorCreateRelease:   errors.New("booooum"),
+					errorGetReleaseByTag: nil,
+					errorUpload:          nil,
+				},
+				stdout: bytes.NewBufferString(""),
+				stderr: bytes.NewBufferString(""),
+			},
+			wants: wants{
+				exitCode: 1,
+				stdout:   "",
+				stderr:   "booooum",
+			},
+		},
+		{
+			name: "ko upload",
+			fields: fields{
+				token:       "",
+				owner:       "",
+				repo:        "",
+				create:      true,
+				file:        "",
+				tag:         "",
+				name:        "",
+				label:       "",
+				contentType: "",
+				githubClient: &githubClientTest{
+					errorCreateRelease:   nil,
+					errorGetReleaseByTag: nil,
+					errorUpload:          errors.New("booooum"),
+				},
+				stdout: bytes.NewBufferString(""),
+				stderr: bytes.NewBufferString(""),
+			},
+			wants: wants{
+				exitCode: 1,
+				stdout:   "",
+				stderr:   "booooum",
 			},
 		},
 	}
