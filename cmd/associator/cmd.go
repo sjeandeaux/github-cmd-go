@@ -36,7 +36,7 @@ type commandLine struct {
 }
 
 func (c *commandLine) init() {
-	log.SetPrefix("associator")
+	log.SetPrefix("[associator]\t")
 	log.SetOutput(c.stderr)
 
 	flag.StringVar(&c.token, "token", os.Getenv("GITHUB_TOKEN"), "The token")

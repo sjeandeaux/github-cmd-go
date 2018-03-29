@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 
+	internalhttp "github.com/sjeandeaux/github-cmd-go/internal/http"
 	"golang.org/x/oauth2"
 )
 
@@ -110,11 +111,7 @@ func (c *Client) Upload(urlPath string, u UploadInformation) error {
 	request.URL.RawQuery = query.Encode()
 
 	resp, err := c.httpClient.Do(request)
-	defer func() {
-		if resp != nil && resp.Body != nil {
-			resp.Body.Close()
-		}
-	}()
+	defer internalhttp.Close(resp)
 	if err != nil {
 		return err
 	}
@@ -132,11 +129,7 @@ func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
 	request.Header.Add(contentType, applicationJSON)
 	resp, err := c.httpClient.Do(request)
-	defer func() {
-		if resp != nil && resp.Body != nil {
-			resp.Body.Close()
-		}
-	}()
+	defer internalhttp.Close(resp)
 	if err != nil {
 		return nil, err
 	}
@@ -156,11 +149,7 @@ func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
 	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonValue))
 	request.Header.Add(contentType, applicationJSON)
 	resp, err := c.httpClient.Do(request)
-	defer func() {
-		if resp != nil && resp.Body != nil {
-			resp.Body.Close()
-		}
-	}()
+	defer internalhttp.Close(resp)
 	if err != nil {
 		return nil, err
 	}

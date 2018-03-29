@@ -31,7 +31,7 @@ func (c *commandLine) increment() (*semver.Version, error) {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("incrementator")
+	log.SetPrefix("[incrementator]\t")
 	log.SetOutput(c.stderr)
 
 	//command line

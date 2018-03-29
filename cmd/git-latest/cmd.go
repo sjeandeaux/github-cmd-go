@@ -16,7 +16,7 @@ type commandLine struct {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("git-latest")
+	log.SetPrefix("[git-latest]\t")
 	log.SetOutput(c.stderr)
 	c.gitVersion = semver.NewGitVersion
 }
