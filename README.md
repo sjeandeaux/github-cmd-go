@@ -33,7 +33,7 @@ The tools associates the binary to a release in github.
                    -owner <owner> \
                    -repo <repo> \
                    -tag  <tag>  \
-                   -file <file>
+                   -asset <file>
 
 #this command attachs the file
 >associator -name <name> \
@@ -42,5 +42,5 @@ The tools associates the binary to a release in github.
                    -owner <owner> \
                    -repo <repo> \
                    -tag  <tag>  \
-                   -file <file>
+                   -asset <file>
 ```
