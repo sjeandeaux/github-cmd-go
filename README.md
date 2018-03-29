@@ -1,6 +1,6 @@
 # Github Command Lines in Golang
 
-[![Build Status](https://travis-ci.org/sjeandeaux/github-cmd-go.svg)](https://travis-ci.org/sjeandeaux/github-cmd-go) [![Coverage Status](https://coveralls.io/repos/sjeandeaux/github-cmd-go/badge.svg)](https://coveralls.io/r/sjeandeaux/github-cmd-go) [![Go Report Card](https://goreportcard.com/badge/github.com/sjeandeaux/github-cmd-go)](https://goreportcard.com/report/github.com/sjeandeaux/github-cmd-go)
+[![Build Status](https://travis-ci.org/sjeandeaux/github-cmd-go.svg)](https://travis-ci.org/sjeandeaux/github-cmd-go)[![Coverage Status](https://coveralls.io/repos/github/sjeandeaux/github-cmd-go/badge.svg?branch=develop)](https://coveralls.io/github/sjeandeaux/github-cmd-go?branch=develop) [![Go Report Card](https://goreportcard.com/badge/github.com/sjeandeaux/github-cmd-go)](https://goreportcard.com/report/github.com/sjeandeaux/github-cmd-go)
 
 ## git-latest
 
