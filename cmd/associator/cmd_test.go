@@ -43,7 +43,7 @@ func Test_commandLine_main(t *testing.T) {
 		owner        string
 		repo         string
 		create       bool
-		file         string
+		path         string
 		tag          string
 		name         string
 		label        string
@@ -70,7 +70,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:       "",
 				repo:        "",
 				create:      true,
-				file:        "",
+				path:        "",
 				tag:         "",
 				name:        "",
 				label:       "",
@@ -96,7 +96,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:       "",
 				repo:        "",
 				create:      false,
-				file:        "",
+				path:        "",
 				tag:         "",
 				name:        "",
 				label:       "",
@@ -122,7 +122,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:       "",
 				repo:        "",
 				create:      false,
-				file:        "",
+				path:        "",
 				tag:         "",
 				name:        "",
 				label:       "",
@@ -148,7 +148,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:       "",
 				repo:        "",
 				create:      true,
-				file:        "",
+				path:        "",
 				tag:         "",
 				name:        "",
 				label:       "",
@@ -174,7 +174,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:       "",
 				repo:        "",
 				create:      true,
-				file:        "",
+				path:        "",
 				tag:         "",
 				name:        "",
 				label:       "",
@@ -201,7 +201,7 @@ func Test_commandLine_main(t *testing.T) {
 				owner:        tt.fields.owner,
 				repo:         tt.fields.repo,
 				create:       tt.fields.create,
-				file:         tt.fields.file,
+				path:         tt.fields.path,
 				tag:          tt.fields.tag,
 				name:         tt.fields.name,
 				label:        tt.fields.label,
