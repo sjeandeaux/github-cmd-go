@@ -24,7 +24,7 @@ type commandLine struct {
 	owner       string
 	repo        string
 	create      bool
-	file        string
+	path        string
 	tag         string
 	name        string
 	label       string
@@ -45,7 +45,7 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.tag, "tag", "", "The tag")
 	flag.BoolVar(&c.create, "create", false, "Create tag")
 
-	flag.StringVar(&c.file, "file", "", "The file")
+	flag.StringVar(&c.path, "path", "", "The path")
 	flag.StringVar(&c.name, "name", "", "The name")
 	flag.StringVar(&c.label, "label", "", "The label")
 	flag.StringVar(&c.contentType, "content-type", "", "The contentType")
@@ -82,7 +82,7 @@ func (c *commandLine) main() int {
 	}
 
 	a := &github.Asset{
-		File:        c.file,
+		File:        c.path,
 		Name:        c.name,
 		Label:       c.label,
 		ContentType: c.contentType,
