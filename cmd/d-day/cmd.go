@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+type now func() time.Time
+
+var timeNow now
+
+func init() {
+	timeNow = time.Now
+}
+
 //commandLine the arguments command line
 type commandLine struct {
 	date string
@@ -19,6 +27,7 @@ type commandLine struct {
 }
 
 func (c *commandLine) init() {
+
 	//flag
 	log.SetPrefix("[d-day]\t")
 	log.SetOutput(c.stderr)
@@ -36,8 +45,12 @@ func (c *commandLine) main() int {
 		return 1
 	}
 
-	delta := time1.Sub(time.Now())
-	days := int64(delta.Hours() / 24)
-	fmt.Fprint(c.stdout, days)
+	delta := int64(time1.Sub(timeNow()).Hours())
+	days := (delta / 24)
+	if delta%24 == 0 {
+		fmt.Fprint(c.stdout, days)
+	} else {
+		fmt.Fprint(c.stdout, days+1)
+	}
 	return 0
 }
