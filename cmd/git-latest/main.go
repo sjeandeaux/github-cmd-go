@@ -7,6 +7,7 @@ import (
 var commandLineValue = commandLine{
 	stdout: os.Stdout,
 	stderr: os.Stderr,
+	stdin:  os.Stdin,
 }
 
 func init() {

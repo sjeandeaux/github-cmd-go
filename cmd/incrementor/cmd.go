@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 
 	"github.com/sjeandeaux/toolators/semver"
 
@@ -17,6 +18,7 @@ type commandLine struct {
 	version  string
 	stdout   io.Writer
 	stderr   io.Writer
+	stdin    *os.File
 }
 
 //increment the version

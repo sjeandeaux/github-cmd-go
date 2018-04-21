@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 
 	"github.com/sjeandeaux/toolators/semver"
 )
@@ -11,6 +12,7 @@ import (
 type commandLine struct {
 	stdout     io.Writer
 	stderr     io.Writer
+	stdin      *os.File
 	gitVersion func() (*semver.Version, error)
 }
 

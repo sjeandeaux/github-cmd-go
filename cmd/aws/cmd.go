@@ -24,5 +24,6 @@ func (c *commandLine) init() {
 }
 
 func (c *commandLine) main() int {
+
 	return 0
 }
