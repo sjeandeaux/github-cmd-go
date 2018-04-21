@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/sjeandeaux/github-cmd-go/github"
-	"github.com/sjeandeaux/github-cmd-go/information"
+	"github.com/sjeandeaux/toolators/github"
+	"github.com/sjeandeaux/toolators/information"
 )
 
 //githubClient github interaction

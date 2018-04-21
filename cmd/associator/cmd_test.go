@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/sjeandeaux/github-cmd-go/github"
+	"github.com/sjeandeaux/toolators/github"
 	"github.com/stretchr/testify/assert"
 )
 

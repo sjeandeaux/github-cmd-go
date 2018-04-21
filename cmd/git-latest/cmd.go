@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/sjeandeaux/github-cmd-go/semver"
+	"github.com/sjeandeaux/toolators/semver"
 )
 
 type commandLine struct {

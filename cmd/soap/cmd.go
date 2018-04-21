@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	internalhttp "github.com/sjeandeaux/github-cmd-go/internal/http"
+	internalhttp "github.com/sjeandeaux/toolators/internal/http"
 )
 
 //commandLine the arguments command line

@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	internalhttp "github.com/sjeandeaux/github-cmd-go/internal/http"
+	internalhttp "github.com/sjeandeaux/toolators/internal/http"
 	"golang.org/x/oauth2"
 )
 

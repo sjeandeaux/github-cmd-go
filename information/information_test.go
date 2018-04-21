@@ -4,7 +4,7 @@ package information_test
 import (
 	"testing"
 
-	"github.com/sjeandeaux/github-cmd-go/information"
+	"github.com/sjeandeaux/toolators/information"
 	"github.com/stretchr/testify/assert"
 )
 

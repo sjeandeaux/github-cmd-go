@@ -1,5 +1,5 @@
 OWNER=sjeandeaux
-REPO=github-cmd-go
+REPO=toolators
 SRC_DIR=github.com/$(OWNER)/$(REPO)
 BUILD_VERSION=$(shell git-latest)
 NEXT_VERSION?=$(shell incrementor -position minor -version $(BUILD_VERSION))
@@ -111,9 +111,9 @@ install: ## run 'go install' for each cmd
 .PHONY: tools
 tools: ## install tools to develop
 	go get -u github.com/golang/dep/cmd/dep
-	go get github.com/sjeandeaux/github-cmd-go/cmd/associator
-	go get github.com/sjeandeaux/github-cmd-go/cmd/incrementor
-	go get github.com/sjeandeaux/github-cmd-go/cmd/git-latest
+	go get github.com/sjeandeaux/toolators/cmd/associator
+	go get github.com/sjeandeaux/toolators/cmd/incrementor
+	go get github.com/sjeandeaux/toolators/cmd/git-latest
 	go get -u github.com/golang/lint/golint
 	go get github.com/axw/gocov/...
 	go get github.com/AlekSi/gocov-xml

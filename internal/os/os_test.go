@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	internalos "github.com/sjeandeaux/github-cmd-go/internal/os"
+	internalos "github.com/sjeandeaux/toolators/internal/os"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -6,9 +6,9 @@ import (
 	"io"
 	"log"
 
-	"github.com/sjeandeaux/github-cmd-go/semver"
+	"github.com/sjeandeaux/toolators/semver"
 
-	internalos "github.com/sjeandeaux/github-cmd-go/internal/os"
+	internalos "github.com/sjeandeaux/toolators/internal/os"
 )
 
 //commandLine the arguments command line
