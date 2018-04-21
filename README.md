@@ -4,11 +4,11 @@
 
 ## git-latest
 
-The tool get the latest version in as tag if not found 0.0.0.
+The tool gets the latest version in as tag if not found 0.0.0.
 
 ## incrementor
 
-The tool increments the verison.
+The tool increments the verson.
 
 ## associator
 
@@ -16,7 +16,7 @@ The tool associates the binary to a release in github.
 
 ## d-day
 
-The tool caculates How many days before the d-day
+The tool caculates how many days before the d-day.
 
 ## soap
 
