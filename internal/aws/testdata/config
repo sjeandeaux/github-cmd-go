@@ -1,0 +1,11 @@
+
+s3 =
+  unsupported_key=123
+  other_unsupported=abc
+
+region = default_region
+
+[oncle-bens]
+region = alt_profile_name_region
+aws_access_key_id = boom-my-access-key-id
+aws_secret_access_key = boom-my-secret-access-key

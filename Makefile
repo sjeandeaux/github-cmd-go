@@ -121,6 +121,7 @@ tools: ## install tools to develop
 	go get github.com/mattn/goveralls
 	go get golang.org/x/oauth2
 	go get github.com/stretchr/testify/assert
+	go get github.com/aws/aws-lambda-go
 
 release-start: ## start release
 	git flow release start $(BUILD_VERSION)
