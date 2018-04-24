@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -63,21 +62,15 @@ func (c *commandLine) input() (io.ReadCloser, error) {
 }
 
 func (c *commandLine) main() int {
-	input := &hipchat.Payload{}
 	data, err := c.input()
 	if err != nil {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return 1
 	}
 	defer data.Close()
-	err = json.NewDecoder(data).Decode(input)
-	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
-	}
 
-	notifier := hipchat.NewNotifier(fmt.Sprintf("https://%s/v2/room/%s/notification", c.hostname, c.room), c.token)
-	err = notifier.Send(input)
+	notifier := hipchat.NewNotifier(fmt.Sprintf(hipchat.URLRoom, c.hostname, c.room), c.token)
+	err = notifier.Send(data)
 	if err != nil {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return 1

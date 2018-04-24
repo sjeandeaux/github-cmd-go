@@ -1,7 +1,7 @@
 package hipchat
 
 import (
-	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,13 +9,6 @@ import (
 
 func TestNotifier_Send(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		input := &Payload{}
-		b := r.Body
-		if b != nil {
-			defer b.Close()
-			json.NewDecoder(b).Decode(input)
-		}
 
 		w.WriteHeader(http.StatusNoContent)
 		//TODO assert the payload
@@ -30,7 +23,7 @@ func TestNotifier_Send(t *testing.T) {
 		httpClient *http.Client
 	}
 	type args struct {
-		message interface{}
+		message io.Reader
 	}
 	tests := []struct {
 		name    string
@@ -46,7 +39,7 @@ func TestNotifier_Send(t *testing.T) {
 				httpClient: ts.Client(),
 			},
 			args: args{
-				message: &Payload{Message: "message", Color: "red", Notify: true, From: "Bob"},
+				message: nil,
 			},
 			wantErr: false,
 		},

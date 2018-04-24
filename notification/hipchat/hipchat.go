@@ -1,9 +1,8 @@
 package hipchat
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -11,23 +10,14 @@ import (
 	"github.com/sjeandeaux/toolators/notification"
 )
 
+//URLRoom we need to replace hostname and room number.
+const URLRoom = "https://%s/v2/room/%s/notification"
+
 //Notifier send a notificiation
 type Notifier struct {
 	token      string
 	url        string
 	httpClient *http.Client
-}
-
-// Payload https://www.hipchat.com/docs/apiv2/method/send_room_notification
-type Payload struct {
-	// From see the documentation hipchat
-	From string `json:"from"`
-	// Notify see the documentation hipchat
-	Notify bool `json:"notify"`
-	// Message see the documentation hipchat
-	Message string `json:"message"`
-	// Color see the documentation hipchat
-	Color string `json:"color"`
 }
 
 var _ notification.Notifier = &Notifier{}
@@ -42,10 +32,9 @@ func NewNotifier(url, token string) notification.Notifier {
 }
 
 //Send send a msg in room hipchat.
-func (n *Notifier) Send(message interface{}) error {
-	jsonValue, _ := json.Marshal(message)
-	println(string(jsonValue))
-	request, _ := http.NewRequest(http.MethodPost, n.url, bytes.NewBuffer(jsonValue))
+// https://www.hipchat.com/docs/apiv2/method/send_room_notification
+func (n *Notifier) Send(message io.Reader) error {
+	request, _ := http.NewRequest(http.MethodPost, n.url, message)
 	request.Header.Add(internalhttp.ContentType, internalhttp.ApplicationJSON)
 	request.Header.Add(internalhttp.Authorization, internalhttp.Bearer+n.token)
 	resp, err := n.httpClient.Do(request)
