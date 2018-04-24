@@ -35,8 +35,8 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.token, "hipchat-token", internalos.Getenv("hipchat_token", ""), "token")
 	flag.StringVar(&c.hostname, "hipchat-hostname", internalos.Getenv("hipchat_hostname", ""), "hostname")
 	flag.StringVar(&c.room, "hipchat-room", internalos.Getenv("hipchat_room", ""), "room")
-	flag.StringVar(&c.data, "data", "", "Data Message")
-	flag.StringVar(&c.file, "file", "", "File Message")
+	flag.StringVar(&c.data, "notifier-data", "", "Data Message")
+	flag.StringVar(&c.file, "notifier-file", "", "File Message")
 	flag.Parse()
 
 }
