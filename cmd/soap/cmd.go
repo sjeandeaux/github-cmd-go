@@ -67,11 +67,11 @@ func (c *commandLine) main() int {
 	)
 
 	input, err := c.input()
-	defer input.Close()
 	if err != nil {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return -1
 	}
+	defer input.Close()
 
 	req, err := http.NewRequest(http.MethodPost, c.url, input)
 	if err != nil {

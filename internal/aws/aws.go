@@ -75,5 +75,5 @@ func (c *CredentialsConfig) userCredentials() *session.Session {
 	} else if c.Profile != "" || c.Filename != "" {
 		config.WithCredentials(credentials.NewSharedCredentials(c.Filename, c.Profile))
 	}
-	return session.New(config)
+	return session.Must(session.NewSession(config))
 }

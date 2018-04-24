@@ -3,6 +3,8 @@ package github
 import (
 	"io"
 	"os"
+
+	internalhttp "github.com/sjeandeaux/toolators/internal/http"
 )
 
 //Asset information on asset to upload https://developer.github.com/v3/repos/releases/#upload-a-release-asset
@@ -36,7 +38,7 @@ func (a *Asset) size() (int64, error) {
 //headers headers http
 func (a *Asset) headers() map[string]string {
 	return map[string]string{
-		contentType: a.ContentType,
+		internalhttp.ContentType: a.ContentType,
 	}
 }
 

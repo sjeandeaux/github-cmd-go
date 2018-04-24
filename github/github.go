@@ -15,9 +15,7 @@ import (
 )
 
 const (
-	githubAPI       = "https://api.github.com/repos"
-	contentType     = "Content-Type"
-	applicationJSON = "application/json"
+	githubAPI = "https://api.github.com/repos"
 )
 
 //Release we want only the upload url.
@@ -125,9 +123,8 @@ func (c *Client) Upload(urlPath string, u UploadInformation) error {
 //GetReleaseByTag get the information
 func (c *Client) GetReleaseByTag(tag string) (*Release, error) {
 	url := fmt.Sprint(c.baseURL, "/", c.owner, "/", c.repo, "/releases/tags/", tag)
-	println(url)
 	request, _ := http.NewRequest(http.MethodGet, url, nil)
-	request.Header.Add(contentType, applicationJSON)
+	request.Header.Add(internalhttp.ContentType, internalhttp.ApplicationJSON)
 	resp, err := c.httpClient.Do(request)
 	defer internalhttp.Close(resp)
 	if err != nil {
@@ -147,7 +144,7 @@ func (c *Client) CreateRelease(edit *EditRelease) (*Release, error) {
 	url := fmt.Sprint(c.baseURL, "/", c.owner, "/", c.repo, "/releases")
 	jsonValue, _ := json.Marshal(edit)
 	request, _ := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(jsonValue))
-	request.Header.Add(contentType, applicationJSON)
+	request.Header.Add(internalhttp.ContentType, internalhttp.ApplicationJSON)
 	resp, err := c.httpClient.Do(request)
 	defer internalhttp.Close(resp)
 	if err != nil {
