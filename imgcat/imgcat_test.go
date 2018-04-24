@@ -10,6 +10,7 @@ import (
 var fileOK = filepath.Join("testdata", "giphy.gif")
 
 func TestPrint(t *testing.T) {
+	t.Skip("imgcat is for iterm")
 	gif, _ := os.Open(fileOK)
 
 	type args struct {
@@ -27,7 +28,6 @@ func TestPrint(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			Print(tt.args.read)
-			t.Error("no!!!")
 		})
 	}
 }
