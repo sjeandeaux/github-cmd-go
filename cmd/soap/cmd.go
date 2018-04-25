@@ -1,16 +1,14 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 	internalhttp "github.com/sjeandeaux/toolators/internal/http"
 )
 
@@ -40,25 +38,6 @@ func (c *commandLine) init() {
 
 }
 
-func (c *commandLine) input() (io.ReadCloser, error) {
-	if c.data != "" {
-		return ioutil.NopCloser(strings.NewReader(c.data)), nil
-	}
-
-	if c.file != "" {
-		return os.Open(c.file)
-	}
-
-	fi, err := c.stdin.Stat()
-	if err != nil {
-		return nil, err
-	}
-	if fi.Mode()&os.ModeNamedPipe == 0 {
-		return nil, errors.New("No pipe")
-	}
-	return os.Stdin, nil
-}
-
 func (c *commandLine) main() int {
 	const (
 		SOAPHeaderAction           = "SOAPAction"
@@ -66,7 +45,7 @@ func (c *commandLine) main() int {
 		SOAPHeaderContentTypeValue = "text/xml;charset=UTF-8"
 	)
 
-	input, err := c.input()
+	input, err := internalcmd.Input(c.data, c.file, c.stdin)
 	if err != nil {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return -1

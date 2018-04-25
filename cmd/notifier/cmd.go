@@ -1,17 +1,18 @@
 package main
 
 import (
-	"errors"
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/sjeandeaux/toolators/notification/hipchat"
 
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 	internalos "github.com/sjeandeaux/toolators/internal/os"
 )
 
@@ -25,6 +26,11 @@ type commandLine struct {
 	room     string
 	data     string
 	file     string
+
+	message string
+	format  string
+	from    string
+	notify  bool
 }
 
 func (c *commandLine) init() {
@@ -32,38 +38,44 @@ func (c *commandLine) init() {
 	log.SetPrefix("[notifier]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.token, "hipchat-token", internalos.Getenv("hipchat_token", ""), "token")
-	flag.StringVar(&c.hostname, "hipchat-hostname", internalos.Getenv("hipchat_hostname", ""), "hostname")
-	flag.StringVar(&c.room, "hipchat-room", internalos.Getenv("hipchat_room", ""), "room")
 	flag.StringVar(&c.data, "notifier-data", "", "Data Message")
 	flag.StringVar(&c.file, "notifier-file", "", "File Message")
+
+	c.flagHipChat()
+
 	flag.Parse()
 
 }
 
-// TODO avoid the copy/paster
-func (c *commandLine) input() (io.ReadCloser, error) {
-	if c.data != "" {
-		return ioutil.NopCloser(strings.NewReader(c.data)), nil
-	}
+func (c *commandLine) flagHipChat() {
+	flag.StringVar(&c.token, "hipchat-token", internalos.Getenv("hipchat_token", ""), "token")
+	flag.StringVar(&c.hostname, "hipchat-hostname", internalos.Getenv("hipchat_hostname", ""), "hostname")
+	flag.StringVar(&c.room, "hipchat-room", internalos.Getenv("hipchat_room", ""), "room")
 
-	if c.file != "" {
-		return os.Open(c.file)
-	}
-
-	fi, err := c.stdin.Stat()
-	if err != nil {
-		return nil, err
-	}
-	if fi.Mode()&os.ModeNamedPipe == 0 {
-		return nil, errors.New("No pipe")
-	}
-	return os.Stdin, nil
+	flag.StringVar(&c.from, "hipchat-from", "notifier", "from")
+	flag.BoolVar(&c.notify, "hipchat-notify", true, "notifiy")
+	flag.StringVar(&c.message, "hipchat-message", "", "message")
+	flag.StringVar(&c.format, "hipchat-format", "text", "message")
 }
 
 func (c *commandLine) main() int {
-	data, err := c.input()
-	if err != nil {
+	data, err := internalcmd.Input(c.data, c.file, c.stdin)
+
+	//TODO ugly have to change this part
+	if internalcmd.IsNoData(err) {
+		jsonMap := map[string]interface{}{
+			"message":        c.message,
+			"notify":         c.notify,
+			"from":           c.from,
+			"message_format": c.format,
+		}
+		b, err := json.Marshal(jsonMap)
+		if err != nil {
+			fmt.Fprintf(c.stderr, fmt.Sprint(err))
+			return 1
+		}
+		data = ioutil.NopCloser(bytes.NewReader(b))
+	} else {
 		fmt.Fprintf(c.stderr, fmt.Sprint(err))
 		return 1
 	}
