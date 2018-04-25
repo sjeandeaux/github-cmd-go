@@ -11,7 +11,7 @@ import (
 //ErrNoData in the pipe
 var errNoData = errors.New("No pipe")
 
-//isNoData true because no data
+//IsNoData true because no data
 func IsNoData(err error) bool {
 	return errNoData == err
 }
