@@ -4,6 +4,8 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -26,7 +28,21 @@ func Input(data, file string, stdin *os.File) (io.ReadCloser, error) {
 	}
 
 	if file != "" {
-		return os.Open(file)
+		fileReader, err := os.Open(file)
+		if err == nil {
+			return fileReader, err
+		}
+
+		_, err = url.Parse(file)
+		if err != nil {
+			return nil, err
+		}
+		println(file)
+		req, _ := http.NewRequest(http.MethodGet, file, nil)
+		//TODO client
+		resp, err := http.DefaultClient.Do(req)
+		return resp.Body, err
+
 	}
 
 	fi, err := stdin.Stat()
