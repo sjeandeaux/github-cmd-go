@@ -23,7 +23,6 @@ type commandLine struct {
 
 //increment the version
 func (c *commandLine) increment() (*semver.Version, error) {
-	println(c.version)
 	v, err := semver.NewVersion(c.version)
 	if err != nil {
 		return nil, err

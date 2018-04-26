@@ -37,7 +37,6 @@ func Input(data, file string, stdin *os.File) (io.ReadCloser, error) {
 		if err != nil {
 			return nil, err
 		}
-		println(file)
 		req, _ := http.NewRequest(http.MethodGet, file, nil)
 		//TODO client
 		resp, err := http.DefaultClient.Do(req)

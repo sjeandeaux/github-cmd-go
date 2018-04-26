@@ -393,7 +393,6 @@ func (a *uploadInformationFailOnSize) size() (int64, error) {
 
 func TestClient_Upload(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println(r.RequestURI)
 		switch r.RequestURI {
 		case "/6.6.6.OK?label=Label&name=fileName":
 			w.WriteHeader(http.StatusCreated)

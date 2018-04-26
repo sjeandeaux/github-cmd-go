@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/base64"
 	"flag"
 	"fmt"
@@ -34,21 +33,14 @@ func cat(r io.Reader, w io.Writer) error {
 	)
 	tmux := os.Getenv(tmuxEnv) != ""
 
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(r)
-	if err != nil {
-		return err
-	}
-
 	if tmux {
 		fmt.Fprint(w, tmuxFirstLine)
 	}
 	fmt.Fprint(w, firstLine)
 
 	encoder := base64.NewEncoder(base64.StdEncoding, w)
-	encoder.Write(buf.Bytes())
 	defer encoder.Close()
-
+	_, err := io.Copy(encoder, r)
 	if err != nil {
 		return err
 	}
