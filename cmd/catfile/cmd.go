@@ -51,11 +51,11 @@ func cat(r io.Reader, w io.Writer) error {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("[git]\t")
+	log.SetPrefix("[catfile]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.data, "data", "", "Data")
-	flag.StringVar(&c.file, "file", "", "File")
+	flag.StringVar(&c.data, "catfile-data", "", "Data")
+	flag.StringVar(&c.file, "catfile-file", "", "File")
 	flag.Parse()
 }
 
