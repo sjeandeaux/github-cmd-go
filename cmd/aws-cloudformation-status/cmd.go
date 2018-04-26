@@ -27,7 +27,7 @@ func (c *commandLine) init() {
 	log.SetPrefix("[aws-cloudformation-status]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.name, "stack-name", "", "")
+	flag.StringVar(&c.name, "name", "", "")
 	flag.StringVar(&c.profile, "profile", "", "")
 
 	flag.Parse()

@@ -26,8 +26,8 @@ type commandLine struct {
 func cat(r io.Reader, w io.Writer) error {
 
 	const (
-		firstLine = "\033]1337;File=;inline=1:"
-		lastLine  = "\a"
+		firstLine = "\x1b]1337;File=;inline=1:"
+		lastLine  = '\a'
 
 		termEnv = "TERM"
 	)
@@ -45,7 +45,7 @@ func cat(r io.Reader, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintln(w, lastLine)
+	fmt.Fprint(w, lastLine)
 	return nil
 }
 
@@ -54,8 +54,8 @@ func (c *commandLine) init() {
 	log.SetPrefix("[catfile]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.data, "catfile-data", "", "Data")
-	flag.StringVar(&c.file, "catfile-file", "", "File")
+	flag.StringVar(&c.data, "data", "", "Data")
+	flag.StringVar(&c.file, "file", "", "File")
 	flag.Parse()
 }
 

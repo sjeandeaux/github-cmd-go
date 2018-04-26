@@ -30,10 +30,10 @@ func (c *commandLine) init() {
 	log.SetPrefix("[soap]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.action, "soap-action", "", "Action SOAP")
-	flag.StringVar(&c.url, "soap-url", "", "URL SOAP")
-	flag.StringVar(&c.data, "soap-data", "", "Data SOAP")
-	flag.StringVar(&c.file, "soap-file", "", "File SOAP")
+	flag.StringVar(&c.action, "action", "", "Action SOAP")
+	flag.StringVar(&c.url, "url", "", "URL SOAP")
+	flag.StringVar(&c.data, "data", "", "Data SOAP")
+	flag.StringVar(&c.file, "file", "", "File SOAP")
 	flag.Parse()
 
 }

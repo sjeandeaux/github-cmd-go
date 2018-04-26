@@ -38,8 +38,8 @@ func (c *commandLine) init() {
 	log.SetPrefix("[notifier]\t")
 	log.SetOutput(c.stderr)
 
-	flag.StringVar(&c.data, "notifier-data", "", "Data Message")
-	flag.StringVar(&c.file, "notifier-file", "", "File Message")
+	flag.StringVar(&c.data, "data", "", "Data Message")
+	flag.StringVar(&c.file, "file", "", "File Message")
 
 	c.flagHipChat()
 
