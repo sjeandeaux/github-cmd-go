@@ -2,11 +2,13 @@ package main
 
 import (
 	"encoding/base64"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
@@ -27,14 +29,13 @@ func cat(r io.Reader, w io.Writer) error {
 		firstLine = "\033]1337;File=;inline=1:"
 		lastLine  = "\a"
 
-		tmuxEnv       = "TMUX"
-		tmuxFirstLine = "\033Ptmux;\033"
-		tmuxLastLine  = "\033\\"
+		termEnv = "TERM"
 	)
-	tmux := os.Getenv(tmuxEnv) != ""
+	//catfile -file https://media.giphy.com/media/OSQoA7hdnoIuQchEBS/giphy.gif
+	screen := strings.HasPrefix(os.Getenv(termEnv), "screen")
 
-	if tmux {
-		fmt.Fprint(w, tmuxFirstLine)
+	if screen {
+		return errors.New("sorry for tmux")
 	}
 	fmt.Fprint(w, firstLine)
 
@@ -44,11 +45,7 @@ func cat(r io.Reader, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-
 	fmt.Fprintln(w, lastLine)
-	if tmux {
-		fmt.Fprintln(w, tmuxLastLine)
-	}
 	return nil
 }
 
