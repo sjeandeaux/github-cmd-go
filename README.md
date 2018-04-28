@@ -34,4 +34,4 @@ The tool gets the stack status.
 
 The tool cat in file (gif, png, ...).
 
-![catfile(./misc/catfile.gif)
+![catfile](.misc/catfile.gif)
