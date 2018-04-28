@@ -1,6 +1,10 @@
 # Github Command Lines in Golang
 
-[![Build Status](https://travis-ci.org/sjeandeaux/toolators.svg)](https://travis-ci.org/sjeandeaux/toolators) [![Coverage Status](https://coveralls.io/repos/github/sjeandeaux/toolators/badge.svg?branch=develop)](https://coveralls.io/github/sjeandeaux/toolators?branch=develop) [![Go Report Card](https://goreportcard.com/badge/github.com/sjeandeaux/toolators)](https://goreportcard.com/report/github.com/sjeandeaux/toolators)
+## catfile
+
+The tool cat in file (gif, png, ...).
+
+![catfile](.misc/catfile.gif)
 
 ## git-latest
 
@@ -34,8 +38,4 @@ The tool sends a message in your messaging.
 
 The tool gets the stack status.
 
-## catfile
-
-The tool cat in file (gif, png, ...).
-
-![catfile](.misc/catfile.gif)
+[![Build Status](https://travis-ci.org/sjeandeaux/toolators.svg)](https://travis-ci.org/sjeandeaux/toolators) [![Coverage Status](https://coveralls.io/repos/github/sjeandeaux/toolators/badge.svg?branch=develop)](https://coveralls.io/github/sjeandeaux/toolators?branch=develop) [![Go Report Card](https://goreportcard.com/badge/github.com/sjeandeaux/toolators)](https://goreportcard.com/report/github.com/sjeandeaux/toolators)
