@@ -6,6 +6,8 @@
 
 The tool gets the latest version in as tag if not found 0.0.0.
 
+![git-latest](.misc/git-latest.gif)
+
 ## incrementor
 
 The tool increments the verson.
@@ -17,6 +19,8 @@ The tool associates the binary to a release in github.
 ## d-day
 
 The tool caculates how many days before the d-day.
+
+![d-day](.misc/d-day.gif)
 
 ## soap
 
