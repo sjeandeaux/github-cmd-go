@@ -29,3 +29,9 @@ The tool sends a message in your messaging.
 ## aws-cloudformation-status
 
 The tool gets the stack status.
+
+## catfile
+
+The tool cat in file (gif, png, ...).
+
+![catfile(./misc/catfile.gif)
