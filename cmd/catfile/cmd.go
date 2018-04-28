@@ -26,8 +26,8 @@ type commandLine struct {
 func cat(r io.Reader, w io.Writer) error {
 
 	const (
-		firstLine = "\x1b]1337;File=;inline=1:"
-		lastLine  = '\a'
+		header = "\x1b]1337;File=;inline=1:"
+		footer = '\a'
 
 		termEnv = "TERM"
 	)
@@ -37,7 +37,7 @@ func cat(r io.Reader, w io.Writer) error {
 	if screen {
 		return errors.New("sorry for tmux")
 	}
-	fmt.Fprint(w, firstLine)
+	fmt.Fprint(w, header)
 
 	encoder := base64.NewEncoder(base64.StdEncoding, w)
 	defer encoder.Close()
@@ -45,7 +45,8 @@ func cat(r io.Reader, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprint(w, lastLine)
+	fmt.Fprint(w, footer)
+
 	return nil
 }
 
