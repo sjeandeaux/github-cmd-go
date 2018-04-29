@@ -3,10 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
-	"log"
-	"os"
 	"time"
+
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
 
 type now func() time.Time
@@ -19,18 +18,14 @@ func init() {
 
 //commandLine the arguments command line
 type commandLine struct {
+	internalcmd.CommandLine
 	date string
-
-	stdout io.Writer
-	stderr io.Writer
-	stdin  *os.File
 }
 
 func (c *commandLine) init() {
 
 	//flag
-	log.SetPrefix("[d-day]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[d-day]")
 
 	flag.StringVar(&c.date, "date", "2018-05-04", "date yyyy-dd-mm")
 
@@ -42,16 +37,15 @@ func (c *commandLine) main() int {
 	const hoursByDay = 24
 	time1, err := time.Parse(time.RFC3339, c.date+"T00:00:00Z")
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 
 	delta := int64(time1.Sub(timeNow()).Hours())
 	days := (delta / hoursByDay)
 	if delta%hoursByDay == 0 {
-		fmt.Fprint(c.stdout, days)
+		fmt.Fprint(c.Stdout, days)
 	} else {
-		fmt.Fprint(c.stdout, days+1)
+		fmt.Fprint(c.Stdout, days+1)
 	}
 	return 0
 }

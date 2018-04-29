@@ -3,29 +3,25 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
-	"log"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
 
 //commandLine the arguments command line
 type commandLine struct {
+	internalcmd.CommandLine
+
 	profile string
 	name    string
-	stdout  io.Writer
-	stderr  io.Writer
-	stdin   *os.File
 }
 
 func (c *commandLine) init() {
 
 	//flag
-	log.SetPrefix("[aws-cloudformation-status]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[aws-cloudformation-status]")
 
 	flag.StringVar(&c.name, "name", "", "")
 	flag.StringVar(&c.profile, "profile", "", "")
@@ -52,13 +48,12 @@ func (c *commandLine) main() int {
 
 	output, err := cldf.DescribeStacks(input)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 
 	if output != nil {
 		for _, stack := range output.Stacks {
-			fmt.Fprintf(c.stdout, "%q %q \n", stack.StackName, stack.StackStatus)
+			fmt.Fprintf(c.Stdout, "%q %q \n", stack.StackName, stack.StackStatus)
 		}
 	}
 

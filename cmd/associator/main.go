@@ -5,10 +5,7 @@ import (
 )
 
 func main() {
-	var commandLineValue = commandLine{
-		stdout: os.Stdout,
-		stderr: os.Stderr,
-	}
+	var commandLineValue = commandLine{}
 	commandLineValue.init()
 	os.Exit(commandLineValue.main())
 }

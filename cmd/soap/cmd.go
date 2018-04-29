@@ -2,11 +2,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
-	"os"
 
 	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 	internalhttp "github.com/sjeandeaux/toolators/internal/http"
@@ -14,21 +11,17 @@ import (
 
 //commandLine the arguments command line
 type commandLine struct {
+	internalcmd.CommandLine
 	client http.Client
 	action string
 	url    string
 	data   string
 	file   string
-
-	stdout io.Writer
-	stderr io.Writer
-	stdin  *os.File
 }
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("[soap]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[soap]")
 
 	flag.StringVar(&c.action, "action", "", "Action SOAP")
 	flag.StringVar(&c.url, "url", "", "URL SOAP")
@@ -45,17 +38,15 @@ func (c *commandLine) main() int {
 		SOAPHeaderContentTypeValue = "text/xml;charset=UTF-8"
 	)
 
-	input, err := internalcmd.Input(c.data, c.file, c.stdin)
+	input, err := c.Input(c.data, c.file)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return -1
+		return c.Fatal(err)
 	}
 	defer input.Close()
 
 	req, err := http.NewRequest(http.MethodPost, c.url, input)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return -1
+		return c.Fatal(err)
 	}
 	req.Header.Set(SOAPHeaderContentType, SOAPHeaderContentTypeValue)
 	req.Header.Set(SOAPHeaderAction, c.action)
@@ -63,14 +54,12 @@ func (c *commandLine) main() int {
 	resp, err := c.client.Do(req)
 	defer internalhttp.Close(resp)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return -1
+		return c.Fatal(err)
 	}
 
-	_, err = io.Copy(c.stdout, resp.Body)
+	_, err = io.Copy(c.Stdout, resp.Body)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return -1
+		return c.Fatal(err)
 	}
 
 	return resp.StatusCode

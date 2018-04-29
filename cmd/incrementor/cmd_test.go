@@ -115,12 +115,12 @@ func Test_commandLine_main(t *testing.T) {
 			c := &commandLine{
 				position: tt.fields.position,
 				version:  tt.fields.version,
-				stdout:   tt.fields.stdout,
-				stderr:   tt.fields.stderr,
 			}
+			c.Stdout = tt.fields.stdout
+			c.Stderr = tt.fields.stderr
 			assert.Equal(t, c.main(), tt.wants.exitCode)
-			assert.Equal(t, tt.wants.stdout, c.stdout.(*bytes.Buffer).String())
-			assert.Equal(t, tt.wants.stderr, c.stderr.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stdout, c.Stdout.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stderr, c.Stderr.(*bytes.Buffer).String())
 		})
 	}
 }

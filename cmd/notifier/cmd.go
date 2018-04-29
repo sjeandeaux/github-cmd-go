@@ -5,10 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"log"
-	"os"
 
 	"github.com/sjeandeaux/toolators/notification/hipchat"
 
@@ -17,9 +14,7 @@ import (
 )
 
 type commandLine struct {
-	stdout io.Writer
-	stderr io.Writer
-	stdin  *os.File
+	internalcmd.CommandLine
 
 	token    string
 	hostname string
@@ -35,8 +30,7 @@ type commandLine struct {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("[notifier]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[notifier]")
 
 	flag.StringVar(&c.data, "data", "", "Data Message")
 	flag.StringVar(&c.file, "file", "", "File Message")
@@ -59,7 +53,7 @@ func (c *commandLine) flagHipChat() {
 }
 
 func (c *commandLine) main() int {
-	data, err := internalcmd.Input(c.data, c.file, c.stdin)
+	data, err := c.Input(c.data, c.file)
 
 	//TODO ugly have to change this part
 	if internalcmd.IsNoData(err) {
@@ -71,21 +65,18 @@ func (c *commandLine) main() int {
 		}
 		b, err := json.Marshal(jsonMap)
 		if err != nil {
-			fmt.Fprintf(c.stderr, fmt.Sprint(err))
-			return 1
+			return c.Fatal(err)
 		}
 		data = ioutil.NopCloser(bytes.NewReader(b))
 	} else {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 	defer data.Close()
 
 	notifier := hipchat.NewNotifier(fmt.Sprintf(hipchat.URLRoom, c.hostname, c.room), c.token)
 	err = notifier.Send(data)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 	return 0
 }

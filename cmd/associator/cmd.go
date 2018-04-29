@@ -2,13 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"io"
-	"log"
 	"os"
 
 	"github.com/sjeandeaux/toolators/github"
-	"github.com/sjeandeaux/toolators/information"
+
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
 
 //githubClient github interaction
@@ -20,6 +18,8 @@ type githubClient interface {
 
 //github token and path
 type commandLine struct {
+	internalcmd.CommandLine
+
 	token       string
 	owner       string
 	repo        string
@@ -31,13 +31,10 @@ type commandLine struct {
 	contentType string
 
 	githubClient githubClient
-	stdout       io.Writer
-	stderr       io.Writer
 }
 
 func (c *commandLine) init() {
-	log.SetPrefix("[associator]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[associator]")
 
 	flag.StringVar(&c.token, "token", os.Getenv("GITHUB_TOKEN"), "The token")
 	flag.StringVar(&c.owner, "owner", "", "The owner")
@@ -56,7 +53,6 @@ func (c *commandLine) init() {
 }
 
 func (c *commandLine) main() int {
-	log.Println(information.Print())
 
 	var only *github.Release
 	var err error
@@ -70,14 +66,12 @@ func (c *commandLine) main() int {
 		only, err = c.githubClient.CreateRelease(e)
 
 		if err != nil {
-			fmt.Fprintf(c.stderr, fmt.Sprint(err))
-			return 1
+			return c.Fatal(err)
 		}
 	} else {
 		only, err = c.githubClient.GetReleaseByTag(c.tag)
 		if err != nil {
-			fmt.Fprintf(c.stderr, fmt.Sprint(err))
-			return 1
+			return c.Fatal(err)
 		}
 	}
 
@@ -89,8 +83,7 @@ func (c *commandLine) main() int {
 	}
 
 	if err := c.githubClient.Upload(only.UploadURL(), a); err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 	return 0
 }

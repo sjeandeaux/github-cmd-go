@@ -51,14 +51,14 @@ func Test_commandLine_main(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &commandLine{
-				date:   tt.fields.date,
-				stdout: tt.fields.stdout,
-				stderr: tt.fields.stderr,
-				stdin:  tt.fields.stdin,
+				date: tt.fields.date,
 			}
+			c.Stdout = tt.fields.stdout
+			c.Stderr = tt.fields.stderr
+			c.Stdin = tt.fields.stdin
 			assert.Equal(t, c.main(), tt.wants.exitCode)
-			assert.Equal(t, tt.wants.stdout, c.stdout.(*bytes.Buffer).String())
-			assert.Equal(t, tt.wants.stderr, c.stderr.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stdout, c.Stdout.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stderr, c.Stderr.(*bytes.Buffer).String())
 		})
 	}
 }

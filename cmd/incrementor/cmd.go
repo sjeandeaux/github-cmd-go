@@ -3,22 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
-	"log"
-	"os"
 
 	"github.com/sjeandeaux/toolators/semver"
 
+	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 	internalos "github.com/sjeandeaux/toolators/internal/os"
 )
 
 //commandLine the arguments command line
 type commandLine struct {
+	internalcmd.CommandLine
 	position string
 	version  string
-	stdout   io.Writer
-	stderr   io.Writer
-	stdin    *os.File
 }
 
 //increment the version
@@ -32,8 +28,7 @@ func (c *commandLine) increment() (*semver.Version, error) {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("[incrementator]\t")
-	log.SetOutput(c.stderr)
+	c.Init("[incrementator]")
 
 	//command line
 	flag.StringVar(&c.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The position major minor patch")
@@ -44,9 +39,8 @@ func (c *commandLine) init() {
 func (c *commandLine) main() int {
 	value, err := c.increment()
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
-	fmt.Fprint(c.stdout, value)
+	fmt.Fprint(c.Stdout, value)
 	return 0
 }

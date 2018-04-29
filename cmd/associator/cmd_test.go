@@ -207,12 +207,12 @@ func Test_commandLine_main(t *testing.T) {
 				label:        tt.fields.label,
 				contentType:  tt.fields.contentType,
 				githubClient: tt.fields.githubClient,
-				stdout:       tt.fields.stdout,
-				stderr:       tt.fields.stderr,
 			}
+			c.Stdout = tt.fields.stdout
+			c.Stderr = tt.fields.stderr
 			assert.Equal(t, c.main(), tt.wants.exitCode)
-			assert.Equal(t, tt.wants.stdout, c.stdout.(*bytes.Buffer).String())
-			assert.Equal(t, tt.wants.stderr, c.stderr.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stdout, c.Stdout.(*bytes.Buffer).String())
+			assert.Equal(t, tt.wants.stderr, c.Stderr.(*bytes.Buffer).String())
 		})
 	}
 }

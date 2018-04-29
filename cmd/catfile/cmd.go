@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
 
@@ -14,9 +13,7 @@ import (
 )
 
 type commandLine struct {
-	stdout io.Writer
-	stderr io.Writer
-	stdin  *os.File
+	internalcmd.CommandLine
 
 	process string
 	data    string
@@ -52,24 +49,20 @@ func cat(r io.Reader, w io.Writer) error {
 
 func (c *commandLine) init() {
 	//flag
-	log.SetPrefix("[catfile]\t")
-	log.SetOutput(c.stderr)
-
+	c.Init("[catfile]")
 	flag.StringVar(&c.data, "data", "", "Data")
 	flag.StringVar(&c.file, "file", "", "File")
 	flag.Parse()
 }
 
 func (c *commandLine) main() int {
-	r, err := internalcmd.Input(c.data, c.file, c.stdin)
+	r, err := internalcmd.Input(c.data, c.file, c.Stdin)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
-	err = cat(r, c.stdout)
+	err = cat(r, c.Stdout)
 	if err != nil {
-		fmt.Fprintf(c.stderr, fmt.Sprint(err))
-		return 1
+		return c.Fatal(err)
 	}
 	return 0
 }

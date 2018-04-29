@@ -2,13 +2,46 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/sjeandeaux/toolators/information"
 )
+
+//CommandLine the I/O command line
+type CommandLine struct {
+	Stdout io.Writer
+	Stderr io.Writer
+	Stdin  *os.File
+}
+
+//Init log and print version
+func (c *CommandLine) Init(prefix string) {
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	c.Stdin = os.Stdin
+
+	log.SetPrefix(prefix)
+	log.SetOutput(c.Stderr)
+	log.Println(information.Print())
+}
+
+//Fatal return 1 and log in Err
+func (c *CommandLine) Fatal(err error) int {
+	fmt.Fprintf(c.Stderr, fmt.Sprint(err))
+	return 1
+}
+
+//Input return the reader on the data or file (can be http) or pipe
+func (c *CommandLine) Input(data, file string) (io.ReadCloser, error) {
+	return Input(data, file, c.Stdin)
+}
 
 //ErrNoData in the pipe
 var errNoData = errors.New("No pipe")
