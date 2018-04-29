@@ -9,8 +9,15 @@ import (
 
 func TestNotifier_Send(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.RequestURI {
+		case "/v2/room/666/notification":
+			w.WriteHeader(http.StatusNoContent)
+		case "/v2/room/boom/notification":
+			w.WriteHeader(http.StatusNotFound)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 
-		w.WriteHeader(http.StatusNoContent)
 		//TODO assert the payload
 		//TODO assert headers
 
@@ -42,6 +49,18 @@ func TestNotifier_Send(t *testing.T) {
 				message: nil,
 			},
 			wantErr: false,
+		},
+		{
+			name: "it should be ok",
+			fields: fields{
+				token:      "my toto ken",
+				url:        ts.URL + "/v2/room/boom/notification",
+				httpClient: ts.Client(),
+			},
+			args: args{
+				message: nil,
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
