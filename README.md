@@ -30,6 +30,8 @@ The tool caculates how many days before the d-day.
 
 The tool soap calls a service soap.
 
+![soap](.misc/soap.gif)
+
 ## notifier
 
 The tool sends a message in your messaging.
