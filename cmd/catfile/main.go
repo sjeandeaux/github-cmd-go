@@ -5,7 +5,5 @@ import (
 )
 
 func main() {
-	commandLineValue := commandLine{}
-	commandLineValue.init()
-	os.Exit(commandLineValue.main())
+	os.Exit((&commandLine{}).init().main())
 }

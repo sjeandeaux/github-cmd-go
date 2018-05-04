@@ -13,10 +13,11 @@ type commandLine struct {
 	gitVersion func() (*semver.Version, error)
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	//flag
 	c.Init("[git-latest]")
 	c.gitVersion = semver.NewGitVersion
+	return c
 }
 
 func (c *commandLine) main() int {

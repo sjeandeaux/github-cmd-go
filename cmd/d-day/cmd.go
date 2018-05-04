@@ -22,7 +22,7 @@ type commandLine struct {
 	date string
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 
 	//flag
 	c.Init("[d-day]")
@@ -30,6 +30,8 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.date, "date", "2018-05-04", "date yyyy-dd-mm")
 
 	flag.Parse()
+
+	return c
 
 }
 

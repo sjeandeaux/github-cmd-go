@@ -19,7 +19,7 @@ type commandLine struct {
 	file   string
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	//flag
 	c.Init("[soap]")
 
@@ -28,6 +28,8 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.data, "data", "", "Data SOAP")
 	flag.StringVar(&c.file, "file", "", "File SOAP")
 	flag.Parse()
+
+	return c
 
 }
 

@@ -47,12 +47,13 @@ func cat(r io.Reader, w io.Writer) error {
 	return nil
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	//flag
 	c.Init("[catfile]")
 	flag.StringVar(&c.data, "data", "", "Data")
 	flag.StringVar(&c.file, "file", "", "File")
 	flag.Parse()
+	return c
 }
 
 func (c *commandLine) main() int {

@@ -28,7 +28,7 @@ type commandLine struct {
 	notify  bool
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	//flag
 	c.Init("[notifier]")
 
@@ -38,7 +38,7 @@ func (c *commandLine) init() {
 	c.flagHipChat()
 
 	flag.Parse()
-
+	return c
 }
 
 func (c *commandLine) flagHipChat() {

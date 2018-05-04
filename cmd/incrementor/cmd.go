@@ -26,7 +26,7 @@ func (c *commandLine) increment() (*semver.Version, error) {
 	return v.Increment(c.position)
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	//flag
 	c.Init("[incrementator]")
 
@@ -34,6 +34,7 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.position, "position", internalos.Getenv("INCREMENTOR_POSITION", "minor"), "The position major minor patch")
 	flag.StringVar(&c.version, "version", "", "The version x.y.z use the git tag if not set")
 	flag.Parse()
+	return c
 }
 
 func (c *commandLine) main() int {

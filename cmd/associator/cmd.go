@@ -33,7 +33,7 @@ type commandLine struct {
 	githubClient githubClient
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 	c.Init("[associator]")
 
 	flag.StringVar(&c.token, "token", os.Getenv("GITHUB_TOKEN"), "The token")
@@ -50,6 +50,7 @@ func (c *commandLine) init() {
 	flag.Parse()
 
 	c.githubClient = github.NewClient(c.token, c.owner, c.repo)
+	return c
 }
 
 func (c *commandLine) main() int {
