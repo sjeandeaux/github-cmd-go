@@ -22,7 +22,7 @@ type CommandLine struct {
 }
 
 //Init log and print version
-func (c *CommandLine) Init(prefix string) {
+func (c *CommandLine) Init(prefix string) *CommandLine {
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
 	c.Stdin = os.Stdin
@@ -30,6 +30,7 @@ func (c *CommandLine) Init(prefix string) {
 	log.SetPrefix(prefix)
 	log.SetOutput(c.Stderr)
 	log.Println(information.Print())
+	return c
 }
 
 //Fatal return 1 and log in Err

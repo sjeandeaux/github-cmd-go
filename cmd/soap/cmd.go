@@ -12,11 +12,11 @@ import (
 //commandLine the arguments command line
 type commandLine struct {
 	internalcmd.CommandLine
-	client http.Client
-	action string
-	url    string
-	data   string
-	file   string
+	httpClient *http.Client
+	action     string
+	url        string
+	data       string
+	file       string
 }
 
 func (c *commandLine) init() *commandLine {
@@ -53,7 +53,7 @@ func (c *commandLine) main() int {
 	req.Header.Set(SOAPHeaderContentType, SOAPHeaderContentTypeValue)
 	req.Header.Set(SOAPHeaderAction, c.action)
 
-	resp, err := c.client.Do(req)
+	resp, err := c.httpClient.Do(req)
 	defer internalhttp.Close(resp)
 	if err != nil {
 		return c.Fatal(err)
