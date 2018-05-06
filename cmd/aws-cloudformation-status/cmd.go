@@ -53,7 +53,7 @@ func (c *commandLine) main() int {
 
 	if output != nil {
 		for _, stack := range output.Stacks {
-			fmt.Fprintf(c.Stdout, "%q %q \n", stack.StackName, stack.StackStatus)
+			fmt.Fprintln(c.Stdout, stack.StackName, " ", stack.StackStatus)
 		}
 	}
 
