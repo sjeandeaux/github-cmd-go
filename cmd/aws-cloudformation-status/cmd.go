@@ -18,7 +18,7 @@ type commandLine struct {
 	name    string
 }
 
-func (c *commandLine) init() {
+func (c *commandLine) init() *commandLine {
 
 	//flag
 	c.Init("[aws-cloudformation-status]")
@@ -27,6 +27,7 @@ func (c *commandLine) init() {
 	flag.StringVar(&c.profile, "profile", "", "")
 
 	flag.Parse()
+	return c
 
 }
 

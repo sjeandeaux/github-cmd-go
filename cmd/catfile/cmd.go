@@ -15,9 +15,8 @@ import (
 type commandLine struct {
 	internalcmd.CommandLine
 
-	process string
-	data    string
-	file    string
+	data string
+	file string
 }
 
 func cat(r io.Reader, w io.Writer) error {
@@ -28,7 +27,7 @@ func cat(r io.Reader, w io.Writer) error {
 
 		termEnv = "TERM"
 	)
-	//catfile -file https://media.giphy.com/media/OSQoA7hdnoIuQchEBS/giphy.gif
+
 	screen := strings.HasPrefix(os.Getenv(termEnv), "screen")
 
 	if screen {
