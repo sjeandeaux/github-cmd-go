@@ -1,13 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
-	"errors"
 	"flag"
-	"fmt"
 	"io"
-	"os"
-	"strings"
 
 	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
@@ -22,28 +19,32 @@ type commandLine struct {
 func cat(r io.Reader, w io.Writer) error {
 
 	const (
-		header = "\x1b]1337;File=;inline=1:"
-		footer = '\a'
-
+		header  = "\x1b]1337;File=;inline=1:"
+		footer  = "\a"
 		termEnv = "TERM"
 	)
 
-	screen := strings.HasPrefix(os.Getenv(termEnv), "screen")
+	pr, pw := io.Pipe()
+	go encode(r, pw)
 
-	if screen {
-		return errors.New("sorry for tmux")
-	}
-	fmt.Fprint(w, header)
+	bHeader := bytes.NewBufferString(header)
+	bFooter := bytes.NewBufferString(footer)
 
+	_, err := io.Copy(w, io.MultiReader(bHeader, pr, bFooter))
+	return err
+}
+
+func encode(r io.Reader, w *io.PipeWriter) {
 	encoder := base64.NewEncoder(base64.StdEncoding, w)
-	defer encoder.Close()
+	defer func() {
+		if err := encoder.Close(); err != nil {
+			w.CloseWithError(err)
+		} else {
+			w.Close()
+		}
+	}()
 	_, err := io.Copy(encoder, r)
-	if err != nil {
-		return err
-	}
-	fmt.Fprint(w, footer)
-
-	return nil
+	w.CloseWithError(err)
 }
 
 func (c *commandLine) init() *commandLine {

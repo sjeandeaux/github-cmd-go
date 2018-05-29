@@ -4,7 +4,7 @@ WORKDIR /go/src/github.com/sjeandeaux/toolators
 COPY . .
 
 RUN make tools
-RUN make build-all
+RUN make build
 
 FROM scratch
 COPY --from=0 /go/src/github.com/sjeandeaux/toolators/target /cmd
