@@ -55,6 +55,14 @@ func NewGitVersion() (*Version, error) {
 	}
 	valueCommit := strings.TrimSpace(string(cmdGetLatestTag))
 
+	if valueCommit == "" {
+		return &Version{
+			Major: 0,
+			Minor: 0,
+			Patch: 0,
+		}, nil
+	}
+
 	cmdTag, err := executor("git", "describe", "--tags", valueCommit).Output()
 	if err != nil {
 		return nil, err
