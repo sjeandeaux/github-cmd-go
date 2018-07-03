@@ -10,6 +10,8 @@ import (
 	internalcmd "github.com/sjeandeaux/toolators/internal/cmd"
 )
 
+//TODO remove or do!!!!!!!!!
+
 //commandLine the arguments command line
 type commandLine struct {
 	internalcmd.CommandLine
